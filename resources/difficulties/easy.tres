@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="DifficultyPreset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://core/difficulty_preset.gd" id="1_preset"]
+
+[resource]
+script = ExtResource("1_preset")
+id = &"easy"
+display_name = "Easy"
+description = "Small board and a fairly absent-minded bot."
+group_size = 2
+total_cards = 12
+bot_memory = 0.2
+bot_think_time = 0.9
+reveal_time = 1.4

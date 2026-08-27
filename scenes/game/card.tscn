@@ -1,0 +1,95 @@
+[gd_scene format=3 uid="uid://pv5rl62vvg5j"]
+
+[ext_resource type="Script" uid="uid://23yw26w54t4k" path="res://scenes/game/card.gd" id="1_card"]
+
+[sub_resource type="StyleBoxFlat" id="SB_card_back"]
+bg_color = Color(0.207843, 0.227451, 0.266667, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.290196, 0.376471, 0.447059, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="SB_card_front"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.909804, 0.929412, 0.952941, 0.3)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="Card" type="Control" unique_id=306793646]
+custom_minimum_size = Vector2(78, 104)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 78.0
+offset_bottom = 104.0
+script = ExtResource("1_card")
+
+[node name="Pivot" type="Control" parent="." unique_id=377034365]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Back" type="Panel" parent="Pivot" unique_id=282350219]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_card_back")
+
+[node name="BackLabel" type="Label" parent="Pivot/Back" unique_id=1408875497]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.482353, 0.607843, 0.721569, 1)
+theme_override_font_sizes/font_size = 36
+text = "?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Front" type="Panel" parent="Pivot" unique_id=283119246]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SB_card_front")
+
+[node name="ValueLabel" type="Label" parent="Pivot/Front" unique_id=1934738287]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.121569, 0.133333, 0.156863, 1)
+theme_override_font_sizes/font_size = 40
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -1,0 +1,77 @@
+[gd_scene format=3 uid="uid://bq6h3p7tl6ico"]
+
+[ext_resource type="Script" uid="uid://bbdooindb16bh" path="res://scenes/game/hud.gd" id="1_hud"]
+
+[node name="HUD" type="Control" unique_id=665538840]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_hud")
+
+[node name="TopBar" type="HBoxContainer" parent="." unique_id=103381698]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 20.0
+offset_top = 16.0
+offset_right = -20.0
+offset_bottom = 78.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TopBar" unique_id=1107570657]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RemainingLabel" type="Label" parent="TopBar/VBoxContainer" unique_id=773318531]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.482353, 0.607843, 0.721569, 1)
+text = "Groups left: 0"
+
+[node name="TimerLabel" type="Label" parent="TopBar/VBoxContainer" unique_id=1489003715]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.482353, 0.607843, 0.721569, 1)
+theme_override_font_sizes/font_size = 22
+text = "00:00"
+
+[node name="ScoreContainer" type="HBoxContainer" parent="TopBar" unique_id=1115345427]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="PauseButton" type="Button" parent="TopBar" unique_id=985708032]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 4
+text = "Pause"
+
+[node name="MessageLabel" type="Label" parent="." unique_id=1929993637]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -46.0
+offset_right = 280.0
+offset_bottom = 46.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.909804, 0.929412, 0.952941, 1)
+theme_override_font_sizes/font_size = 34
+horizontal_alignment = 1
+vertical_alignment = 1

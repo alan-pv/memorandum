@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="DifficultyPreset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://core/difficulty_preset.gd" id="1_preset"]
+
+[resource]
+script = ExtResource("1_preset")
+id = &"nightmare"
+display_name = "Nightmare"
+description = "Groups of 4 on a huge board, with perfect memory."
+group_size = 4
+total_cards = 36
+bot_memory = 1.0
+bot_think_time = 0.35
+reveal_time = 0.6

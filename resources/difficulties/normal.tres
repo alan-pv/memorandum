@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="DifficultyPreset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://core/difficulty_preset.gd" id="1_preset"]
+
+[resource]
+script = ExtResource("1_preset")
+id = &"normal"
+display_name = "Normal"
+description = "Medium board. The bot remembers about half of what it sees."
+group_size = 2
+total_cards = 20
+bot_memory = 0.55
+bot_think_time = 0.7
+reveal_time = 1.0

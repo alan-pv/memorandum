@@ -1,0 +1,104 @@
+[gd_scene format=3 uid="uid://5tu137d8ptwv"]
+
+[ext_resource type="Script" uid="uid://c7g7qo17hqa53" path="res://scenes/difficulty_menu/difficulty_menu.gd" id="1_diff"]
+[ext_resource type="Resource" path="res://resources/difficulties/easy.tres" id="2_easy"]
+[ext_resource type="Script" uid="uid://bedgad5geiyj8" path="res://core/difficulty_preset.gd" id="2_fnlck"]
+[ext_resource type="Resource" path="res://resources/difficulties/normal.tres" id="3_normal"]
+[ext_resource type="Resource" path="res://resources/difficulties/hard.tres" id="4_hard"]
+[ext_resource type="Shader" uid="uid://ifjwkhjcmu8w" path="res://assets/shaders/background.gdshader" id="6_esjue"]
+[ext_resource type="Texture2D" uid="uid://detwqytki1m0g" path="res://assets/sprites/background.png" id="7_8jvx0"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2ybyc"]
+shader = ExtResource("6_esjue")
+shader_parameter/speed = 0.1
+
+[node name="DifficultyMenu" type="Control" unique_id=785206846]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_diff")
+presets = Array[ExtResource("2_fnlck")]([ExtResource("2_easy"), ExtResource("3_normal"), ExtResource("4_hard")])
+
+[node name="Background" type="ColorRect" parent="." unique_id=2037048608]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.12156863, 0.13333334, 0.15686275, 1)
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=857776574]
+modulate = Color(0.20784314, 0.22745098, 0.26666668, 1)
+material = SubResource("ShaderMaterial_2ybyc")
+layout_mode = 0
+offset_left = -23.0
+offset_top = -283.0
+offset_right = 1177.0
+offset_bottom = 917.0
+texture = ExtResource("7_8jvx0")
+stretch_mode = 1
+
+[node name="Center" type="CenterContainer" parent="." unique_id=1197441033]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center" unique_id=899221245]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Center/VBox" unique_id=1068487839]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Choose your game"
+horizontal_alignment = 1
+
+[node name="OpponentRow" type="HBoxContainer" parent="Center/VBox" unique_id=1842160144]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="VsBotButton" type="Button" parent="Center/VBox/OpponentRow" unique_id=474362234]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(134, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_pressed = true
+text = "Vs Bot"
+
+[node name="VsHumanButton" type="Button" parent="Center/VBox/OpponentRow" unique_id=1618000773]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(134, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+text = "Vs Player"
+
+[node name="Separator" type="HSeparator" parent="Center/VBox" unique_id=1765143869]
+layout_mode = 2
+
+[node name="PresetContainer" type="VBoxContainer" parent="Center/VBox" unique_id=286804060]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CustomButton" type="Button" parent="Center/VBox" unique_id=1863744590]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+text = "Custom..."
+
+[node name="BackButton" type="Button" parent="Center/VBox" unique_id=1412890731]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+text = "Back"
