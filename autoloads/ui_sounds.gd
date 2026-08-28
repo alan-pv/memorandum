@@ -1,53 +1,73 @@
 extends Node
-## Autoload. Conecta sonido + animación a TODOS los botones del juego,
-## sin importar en qué escena estén ni cuándo se creen.
+## Autoload. Hover and click sound plus feedback for every button.
 
 func _ready() -> void:
 	get_tree().node_added.connect(_on_node_added)
-	_scan_existing(get_tree().root)
+	_scan(get_tree().root)
 
-func _scan_existing(node: Node) -> void:
-	if node is Button or node is TextureButton:
-		connect_signals(node)
+
+func _scan(node: Node) -> void:
+	if node is BaseButton:
+		_setup(node)
 	for child in node.get_children():
-		_scan_existing(child)
-	
-func _on_node_added(node: Node) -> void:
-	if node is Button or node is TextureButton:
-		connect_signals(node)
+		_scan(child)
 
-func connect_signals(node: Control) -> void:
-	# Evita conexiones dobles si el nodo reingresa al árbol
-	if node.pressed.is_connected(_on_click):
+
+func _on_node_added(node: Node) -> void:
+	if node is BaseButton:
+		_setup(node)
+
+
+func _setup(btn: BaseButton) -> void:
+	if btn.has_meta("btnfx"):
+		return
+	btn.set_meta("btnfx", true)
+	btn.mouse_entered.connect(_on_hover.bind(btn))
+	btn.pressed.connect(_on_click.bind(btn))
+
+
+func _fx_target(btn: Control) -> Control:
+	var p := btn.get_parent()
+	if p is Control and p.name == "Anim":
+		return p
+	return btn
+
+
+func _on_hover(btn: BaseButton) -> void:
+	if btn.disabled:
+		return
+	AudioManager.play_sfx(AudioManager.SFX_HOVER)
+	_bump(btn)
+
+
+func _on_click(btn: BaseButton) -> void:
+	AudioManager.play_sfx(AudioManager.SFX_CLICK)
+	_bump(btn)
+
+
+func _bump(btn: BaseButton) -> void:
+	var c := _fx_target(btn)
+	# Stay out of the way while the scene is still playing its intro.
+	if c.is_in_group("ui_intro_playing"):
 		return
 
-	node.mouse_entered.connect(_on_hover)
-	node.pressed.connect(_on_click)
-	node.mouse_entered.connect(animate_hover.bind(node))
-	node.pressed.connect(animate_hover.bind(node))
-	node.mouse_filter = Control.MOUSE_FILTER_STOP
+	c.pivot_offset = c.size * 0.5
 
-func _on_hover() -> void:
-	AudioManager.play_sfx(AudioManager.SFX_HOVER)
+	for key in ["bump_scale", "bump_rot"]:
+		if not c.has_meta(key):
+			continue
+		var old: Variant = c.get_meta(key)
+		if old is Tween and old.is_valid():
+			old.kill()
 
-func _on_click() -> void:
-	AudioManager.play_sfx(AudioManager.SFX_CLICK)
+	var dir: float = [-1.0, 1.0].pick_random()
+	var rot := c.create_tween()
+	rot.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	rot.tween_property(c, "rotation_degrees", 2.5 * dir, 0.1)
+	rot.tween_property(c, "rotation_degrees", 0.0, 0.7)
+	c.set_meta("bump_rot", rot)
 
-func animate_hover(node: Control) -> void:
-	if node.get_parent().name == "Anim":
-		node = node.get_parent()
-
-	var tween = node.create_tween()
-	tween.set_trans(Tween.TRANS_ELASTIC)
-	tween.set_ease(Tween.EASE_OUT)
-
-	node.pivot_offset = node.size / 2
-
-	var _sign = randf_range(1, -1)
-
-	tween.tween_property(node, "rotation_degrees", 2.5 * _sign, 0.1)
-	tween.tween_property(node, "rotation_degrees", 0.0, 0.7)
-
-	var scale_tween = node.create_tween()
-	scale_tween.tween_property(node, "scale", Vector2(0.80, 1.1), 0.1)
-	scale_tween.tween_property(node, "scale", Vector2(1.0, 1.0), 0.1)
+	var sc := c.create_tween()
+	sc.tween_property(c, "scale", Vector2(0.80, 1.1), 0.1)
+	sc.tween_property(c, "scale", Vector2.ONE, 0.1)
+	c.set_meta("bump_scale", sc)

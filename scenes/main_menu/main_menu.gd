@@ -20,12 +20,15 @@ func _ready() -> void:
 	SceneSwitcher.clear_history()
 
 
+func _intro_config() -> Dictionary:
+	return {"labels": false, "buttons": true, "panels": false}
+
+
 func _on_play_pressed() -> void:
 	SceneSwitcher.go_to(SceneSwitcher.DIFFICULTY_MENU)
 
 
 func _on_quit_pressed() -> void:
-	GameSettings.save_preferences()
 	SceneSwitcher.quit_game()
 
 

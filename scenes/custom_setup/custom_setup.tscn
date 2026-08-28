@@ -11,16 +11,6 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_custom")
 
-[node name="Background" type="ColorRect" parent="." unique_id=699166131]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0.121569, 0.133333, 0.156863, 1)
-
 [node name="Center" type="CenterContainer" parent="." unique_id=1514232807]
 layout_mode = 1
 anchors_preset = 15
@@ -57,10 +47,11 @@ text = "Matching cards per group"
 [node name="GroupSizeSpin" type="SpinBox" parent="Center/Panel/VBox/Fields" unique_id=1570880752]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 10
 min_value = 2.0
 max_value = 8.0
 value = 2.0
+alignment = 2
 
 [node name="TotalCardsLabel" type="Label" parent="Center/Panel/VBox/Fields" unique_id=1122487118]
 layout_mode = 2
@@ -69,10 +60,11 @@ text = "Cards on the board"
 [node name="TotalCardsSpin" type="SpinBox" parent="Center/Panel/VBox/Fields" unique_id=2054738081]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 10
 min_value = 4.0
 max_value = 96.0
 value = 16.0
+alignment = 2
 
 [node name="SummaryLabel" type="Label" parent="Center/Panel/VBox" unique_id=863198767]
 unique_name_in_owner = true

@@ -1,32 +1,30 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://be0kqm6mnlr72"]
 
-[ext_resource type="Script" path="res://scenes/game/player_score_entry.gd" id="1_entry"]
+[ext_resource type="Script" uid="uid://dc860qxdnwf0s" path="res://scenes/game/player_score_entry.gd" id="1_entry"]
 
-[node name="PlayerScoreEntry" type="PanelContainer"]
+[node name="PlayerScoreEntry" type="PanelContainer" unique_id=2109613912]
 custom_minimum_size = Vector2(140, 0)
 offset_right = 140.0
 offset_bottom = 62.0
 mouse_filter = 2
 script = ExtResource("1_entry")
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="VBox" type="VBoxContainer" parent="." unique_id=1225034911]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 0
 
-[node name="NameLabel" type="Label" parent="VBox"]
+[node name="NameLabel" type="Label" parent="VBox" unique_id=1540231979]
 unique_name_in_owner = true
 layout_mode = 2
-mouse_filter = 2
+theme_override_colors/font_color = Color(0, 0.49803922, 0.37254903, 1)
 theme_override_font_sizes/font_size = 15
-theme_override_colors/font_color = Color(0.482353, 0.607843, 0.721569, 1)
 text = "Player"
 horizontal_alignment = 1
 
-[node name="ScoreLabel" type="Label" parent="VBox"]
+[node name="ScoreLabel" type="Label" parent="VBox" unique_id=298563171]
 unique_name_in_owner = true
 layout_mode = 2
-mouse_filter = 2
 theme_override_colors/font_color = Color(0.909804, 0.929412, 0.952941, 1)
 theme_override_font_sizes/font_size = 26
 text = "0"

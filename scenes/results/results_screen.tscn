@@ -11,16 +11,6 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_results")
 
-[node name="Background" type="ColorRect" parent="." unique_id=396647582]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0.121569, 0.133333, 0.156863, 1)
-
 [node name="Center" type="CenterContainer" parent="." unique_id=1001222301]
 layout_mode = 1
 anchors_preset = 15
@@ -38,26 +28,30 @@ layout_mode = 2
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="Label" parent="Center/Panel/VBox" unique_id=1395535883]
+[node name="VBoxContainer" type="VBoxContainer" parent="Center/Panel/VBox" unique_id=1796361312]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TitleLabel" type="Label" parent="Center/Panel/VBox/VBoxContainer" unique_id=1395535883]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.909804, 0.929412, 0.952941, 1)
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 48
 text = "Game over"
 horizontal_alignment = 1
 
-[node name="ScoresContainer" type="VBoxContainer" parent="Center/Panel/VBox" unique_id=321843179]
+[node name="ScoresContainer" type="VBoxContainer" parent="Center/Panel/VBox/VBoxContainer" unique_id=321843179]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="StatsLabel" type="Label" parent="Center/Panel/VBox" unique_id=1018008328]
+[node name="StatsLabel" type="Label" parent="Center/Panel/VBox/VBoxContainer" unique_id=1018008328]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.482353, 0.607843, 0.721569, 1)
+theme_override_colors/font_color = Color(0.69803923, 0.69803923, 0.69803923, 1)
 horizontal_alignment = 1
 
-[node name="RecordLabel" type="Label" parent="Center/Panel/VBox" unique_id=1107731937]
+[node name="RecordLabel" type="Label" parent="Center/Panel/VBox/VBoxContainer" unique_id=1107731937]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2

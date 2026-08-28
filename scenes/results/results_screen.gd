@@ -46,9 +46,9 @@ func _show_result(result: Dictionary) -> void:
 		line.text = "%s — %d groups" % [player_name, scores[i]]
 		line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		if i == winner:
-			line.add_theme_color_override("font_color", Color("#e8edf3"))
+			line.add_theme_color_override("font_color", Color("b2b2b2ff"))
 		else:
-			line.add_theme_color_override("font_color", Color("#7b9bb8"))
+			line.add_theme_color_override("font_color", Color("#b2b2b278"))
 		_scores_container.add_child(line)
 
 	var turns: int = result.get("turns", 0)

@@ -3,8 +3,8 @@
 [ext_resource type="Script" uid="uid://clv4v7imergrr" path="res://scenes/game/game.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/game/board.tscn" id="2_board"]
 [ext_resource type="Script" uid="uid://bxgfif35j5km8" path="res://autoloads/ui_sounds.gd" id="2_lfrn8"]
-[ext_resource type="PackedScene" path="res://scenes/game/hud.tscn" id="3_hud"]
-[ext_resource type="PackedScene" path="res://scenes/game/pause_menu.tscn" id="4_pause"]
+[ext_resource type="PackedScene" uid="uid://bq6h3p7tl6ico" path="res://scenes/game/hud.tscn" id="3_hud"]
+[ext_resource type="PackedScene" uid="uid://bpk37y5tkiru4" path="res://scenes/game/pause_menu.tscn" id="4_pause"]
 
 [node name="Game" type="Control" unique_id=1222731245]
 layout_mode = 3
@@ -15,16 +15,6 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_game")
-
-[node name="Background" type="ColorRect" parent="." unique_id=747018216]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0.12156863, 0.13333334, 0.15686275, 1)
 
 [node name="BoardArea" type="MarginContainer" parent="." unique_id=1198486554]
 layout_mode = 1

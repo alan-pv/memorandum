@@ -21,6 +21,7 @@ GameSettings="*res://autoloads/game_settings.gd"
 SceneSwitcher="*res://autoloads/scene_switcher.gd"
 AudioManager="*res://autoloads/audio_manager.gd"
 UiSounds="*uid://bxgfif35j5km8"
+UiIntro="*uid://bfpqjea2x1yw5"
 
 [display]
 
@@ -38,3 +39,4 @@ theme/custom="res://resources/themes/main_theme.tres"
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+environment/defaults/default_clear_color=Color(0.07058824, 0.07058824, 0.07058824, 1)

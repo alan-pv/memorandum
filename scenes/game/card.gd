@@ -142,7 +142,7 @@ func _on_mouse_entered() -> void:
 	tween.tween_property(_pivot, "scale", Vector2(1.08, 1.08), 0.12)
 	tween.tween_property(_pivot, "position:y", -6.0, 0.12)
 	
-	# Rotación tipo balanceo (izquierda -> derecha -> centro)
+	# Wobble: left -> right -> centre.
 	var _sign = 1.0 if randf() > 0.5 else -1.0
 	tween.chain().tween_property(_pivot, "rotation_degrees", 4.0 * _sign, 0.1) \
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)

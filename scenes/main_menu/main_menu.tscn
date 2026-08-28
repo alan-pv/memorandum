@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://mx12d0ttj1bp" path="res://scenes/main_menu/main_menu.gd" id="1_menu"]
 [ext_resource type="Texture2D" uid="uid://detwqytki1m0g" path="res://assets/sprites/background.png" id="2_0ebjn"]
 [ext_resource type="Shader" uid="uid://ifjwkhjcmu8w" path="res://assets/shaders/background.gdshader" id="2_ob46e"]
-[ext_resource type="Texture2D" uid="uid://d2sg408j8qk3f" path="res://assets/sprites/title.png" id="4_uqeha"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mlugr"]
 shader = ExtResource("2_ob46e")
@@ -18,28 +17,8 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_menu")
 
-[node name="Background" type="ColorRect" parent="." unique_id=1974384264]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0.12156863, 0.13333334, 0.15686275, 1)
-
-[node name="Background2" type="ColorRect" parent="." unique_id=261321887]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0.12156863, 0.13333334, 0.15686275, 1)
-
 [node name="TextureRect" type="TextureRect" parent="." unique_id=213896333]
-modulate = Color(0.20784314, 0.22745098, 0.26666668, 1)
+modulate = Color(0.11764706, 0.11764706, 0.11764706, 1)
 material = SubResource("ShaderMaterial_mlugr")
 layout_mode = 0
 offset_left = -23.0
@@ -62,34 +41,39 @@ mouse_filter = 2
 layout_mode = 2
 theme_override_constants/separation = 14
 
+[node name="Label" type="Label" parent="Center/VBox" unique_id=1586953043]
+layout_mode = 2
+theme_override_font_sizes/font_size = 96
+text = "Memorandum"
+horizontal_alignment = 1
+
 [node name="Spacer" type="Control" parent="Center/VBox" unique_id=317562032]
+visible = false
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="PlayButton" type="Button" parent="Center/VBox" unique_id=1923214012]
+[node name="VBoxContainer" type="VBoxContainer" parent="Center/VBox" unique_id=1447348951]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="PlayButton" type="Button" parent="Center/VBox/VBoxContainer" unique_id=1923214012]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
 text = "Play"
 
-[node name="HowToButton" type="Button" parent="Center/VBox" unique_id=1003550859]
+[node name="HowToButton" type="Button" parent="Center/VBox/VBoxContainer" unique_id=1003550859]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 text = "How to play"
 
-[node name="QuitButton" type="Button" parent="Center/VBox" unique_id=193159753]
+[node name="QuitButton" type="Button" parent="Center/VBox/VBoxContainer" unique_id=193159753]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 text = "Quit"
-
-[node name="Title" type="Sprite2D" parent="Center/VBox" unique_id=1147830077]
-modulate = Color(0.9098039, 0.92941177, 0.9529412, 1)
-position = Vector2(116.475, 126.66)
-rotation = -0.06632251
-texture = ExtResource("4_uqeha")
 
 [node name="HelpPanel" type="Control" parent="." unique_id=756708854]
 unique_name_in_owner = true
@@ -100,15 +84,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="Dim" type="ColorRect" parent="HelpPanel" unique_id=62589578]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.121569, 0.133333, 0.156863, 0.85)
 
 [node name="Center" type="CenterContainer" parent="HelpPanel" unique_id=1395383126]
 layout_mode = 1

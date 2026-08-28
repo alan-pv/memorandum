@@ -22,18 +22,8 @@ grow_vertical = 2
 script = ExtResource("1_diff")
 presets = Array[ExtResource("2_fnlck")]([ExtResource("2_easy"), ExtResource("3_normal"), ExtResource("4_hard")])
 
-[node name="Background" type="ColorRect" parent="." unique_id=2037048608]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0.12156863, 0.13333334, 0.15686275, 1)
-
 [node name="TextureRect" type="TextureRect" parent="." unique_id=857776574]
-modulate = Color(0.20784314, 0.22745098, 0.26666668, 1)
+modulate = Color(0.11764706, 0.11764706, 0.11764706, 1)
 material = SubResource("ShaderMaterial_2ybyc")
 layout_mode = 0
 offset_left = -23.0
@@ -54,7 +44,7 @@ mouse_filter = 2
 
 [node name="VBox" type="VBoxContainer" parent="Center" unique_id=899221245]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 
 [node name="Title" type="Label" parent="Center/VBox" unique_id=1068487839]
 layout_mode = 2
@@ -62,11 +52,15 @@ theme_override_font_sizes/font_size = 40
 text = "Choose your game"
 horizontal_alignment = 1
 
-[node name="OpponentRow" type="HBoxContainer" parent="Center/VBox" unique_id=1842160144]
+[node name="VBoxContainer2" type="VBoxContainer" parent="Center/VBox" unique_id=98207079]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="OpponentRow" type="HBoxContainer" parent="Center/VBox/VBoxContainer2" unique_id=1842160144]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="VsBotButton" type="Button" parent="Center/VBox/OpponentRow" unique_id=474362234]
+[node name="VsBotButton" type="Button" parent="Center/VBox/VBoxContainer2/OpponentRow" unique_id=474362234]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(134, 0)
 layout_mode = 2
@@ -75,7 +69,7 @@ toggle_mode = true
 button_pressed = true
 text = "Vs Bot"
 
-[node name="VsHumanButton" type="Button" parent="Center/VBox/OpponentRow" unique_id=1618000773]
+[node name="VsHumanButton" type="Button" parent="Center/VBox/VBoxContainer2/OpponentRow" unique_id=1618000773]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(134, 0)
 layout_mode = 2
@@ -83,21 +77,24 @@ size_flags_horizontal = 3
 toggle_mode = true
 text = "Vs Player"
 
-[node name="Separator" type="HSeparator" parent="Center/VBox" unique_id=1765143869]
+[node name="Separator" type="HSeparator" parent="Center/VBox/VBoxContainer2" unique_id=1765143869]
 layout_mode = 2
 
-[node name="PresetContainer" type="VBoxContainer" parent="Center/VBox" unique_id=286804060]
+[node name="PresetContainer" type="VBoxContainer" parent="Center/VBox/VBoxContainer2" unique_id=286804060]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 4
 
-[node name="CustomButton" type="Button" parent="Center/VBox" unique_id=1863744590]
+[node name="VBoxContainer" type="VBoxContainer" parent="Center/VBox/VBoxContainer2" unique_id=274436858]
+layout_mode = 2
+
+[node name="CustomButton" type="Button" parent="Center/VBox/VBoxContainer2/VBoxContainer" unique_id=1863744590]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
 text = "Custom..."
 
-[node name="BackButton" type="Button" parent="Center/VBox" unique_id=1412890731]
+[node name="BackButton" type="Button" parent="Center/VBox/VBoxContainer2/VBoxContainer" unique_id=1412890731]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2

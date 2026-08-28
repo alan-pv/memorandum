@@ -54,9 +54,15 @@ func go_to(scene_path: String, record_history: bool = true) -> void:
 	var error := get_tree().change_scene_to_file(scene_path)
 	if error != OK:
 		push_error("Could not load scene: %s (error %d)" % [scene_path, error])
-	await get_tree().process_frame
-	await _fade(0.0)
+		_is_switching = false
+		return
 
+	var scene := await _await_scene_ready()
+	if scene:
+		UiIntro.prepare(scene)
+	await _fade(0.0)
+	if scene:
+		UiIntro.play()
 	_is_switching = false
 	transition_finished.emit(scene_path)
 
@@ -67,6 +73,20 @@ func go_back() -> void:
 		return
 	var previous: String = _history.pop_back()
 	go_to(previous, false)
+
+
+## change_scene_to_file() is deferred, so wait until current_scene really
+## exists instead of assuming one frame is enough.
+func _await_scene_ready() -> Node:
+	var tries := 0
+	while tries < 30:
+		var scene := get_tree().current_scene
+		if scene != null and is_instance_valid(scene) and scene.is_node_ready():
+			return scene
+		await get_tree().process_frame
+		tries += 1
+	push_error("The scene was not ready in time.")
+	return null
 
 
 func clear_history() -> void:

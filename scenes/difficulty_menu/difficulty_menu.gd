@@ -57,7 +57,6 @@ func _select_opponent(value: GameConfig.Opponent) -> void:
 
 func _on_preset_pressed(preset: DifficultyPreset) -> void:
 	GameSettings.last_difficulty_id = preset.id
-	GameSettings.save_preferences()
 	GameSettings.start_new_game(preset.to_config(_opponent))
 	SceneSwitcher.go_to(SceneSwitcher.GAME)
 
