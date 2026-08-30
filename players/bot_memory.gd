@@ -46,7 +46,7 @@ func find_complete_group(group_size: int) -> Array[int]:
 
 
 func unknown_from(available: Array[int]) -> Array[int]:
-	var unknown := []
+	var unknown: Array[int] = []
 	for i in available:
 		if not _known.has(i):
 			unknown.append(i)
