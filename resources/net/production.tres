@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_net")
-url = "wss://memorandum.duckdns.org/ws"
+url = "wss://server.tail6548a0.ts.net/ws"
 game_id = "memorandum"
 connect_timeout = 8.0
 label = "Production"
