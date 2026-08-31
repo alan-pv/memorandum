@@ -147,3 +147,9 @@ func _on_room_error(code: String, message: String) -> void:
 
 func _on_relayed(from_id: int, payload: Dictionary) -> void:
 	payload_received.emit(from_id, payload)
+
+
+## Answering is the whole contribution: it is what keeps the client -> server
+## half of the socket from being timed out by whatever proxy sits in between.
+func _on_ping() -> void:
+	pong.rpc_id(1)

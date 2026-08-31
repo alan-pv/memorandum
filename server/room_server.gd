@@ -40,6 +40,8 @@ var _peers: Dictionary = {}
 var _rooms: Dictionary = {}
 var _peer: WebSocketMultiplayerPeer
 
+var _since_keepalive: float = 0.0
+
 
 func start_server(port: int, bind_address: String = "127.0.0.1") -> Error:
 	_peer = WebSocketMultiplayerPeer.new()
@@ -84,6 +86,23 @@ func _on_peer_disconnected(id: int) -> void:
 	_peers.erase(id)
 	peers_changed.emit(_peers.size())
 	print("[relay] peer %d disconnected (%d online)" % [id, _peers.size()])
+
+
+## Every peer gets poked on the same clock. A client answers with `pong`, which
+## is why nothing here reads the answer: the point is the traffic, not the
+## reply, and a peer that stays quiet is a browser tab in the background rather
+## than a peer worth dropping.
+func _process(delta: float) -> void:
+	if _peers.is_empty():
+		return
+	_since_keepalive += delta
+	if _since_keepalive < NetProtocol.KEEPALIVE_SECONDS:
+		return
+	_since_keepalive = 0.0
+	for id: int in _peers:
+		var info: PeerInfo = _peers[id]
+		if info.connected:
+			ping.rpc_id(id)
 
 
 # ---------------------------------------------------------------------------

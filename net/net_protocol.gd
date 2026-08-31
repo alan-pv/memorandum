@@ -7,9 +7,17 @@ extends Node
 
 ## Bump this whenever a message changes shape. A client that does not match is
 ## turned away with a clear reason instead of failing in some subtle way later.
-const PROTOCOL_VERSION := 1
+const PROTOCOL_VERSION := 2
 
 const DEFAULT_PORT := 8080
+
+## How often the relay pokes each peer, and each peer pokes back.
+##
+## A CDN or a reverse proxy closes a WebSocket it believes is idle — Cloudflare
+## does it at around 100 seconds — and a turn-based game is idle for minutes at
+## a time while somebody stares at the board. Nothing above this layer should
+## ever have to know that, so the socket is kept warm from down here.
+const KEEPALIVE_SECONDS := 30.0
 
 const MAX_ROOMS := 10
 const MIN_PLAYERS := 2
@@ -119,6 +127,14 @@ func relay(payload: Dictionary) -> void:
 	_on_relay(_sender(), payload)
 
 
+## The answer to `ping`. It carries nothing: its only job is to put bytes on the
+## wire in this direction, because a proxy may time out each direction of a
+## socket separately.
+@rpc("any_peer", "call_remote", "reliable")
+func pong() -> void:
+	_on_pong(_sender())
+
+
 # ---------------------------------------------------------------------------
 # Server -> client
 # ---------------------------------------------------------------------------
@@ -156,6 +172,18 @@ func relayed(from_id: int, payload: Dictionary) -> void:
 	_on_relayed(from_id, payload)
 
 
+## Keeps the socket warm. The relay asks rather than waiting to be asked,
+## because this is the half that still works when the other end is a browser
+## tab in the background: a frozen tab runs no code and can answer nothing, but
+## the bytes still arrive and the connection stays open.
+##
+## Deliberately nothing times out on silence. Being unanswered is exactly what a
+## backgrounded tab looks like, and dropping it would undo the point.
+@rpc("authority", "call_remote", "reliable")
+func ping() -> void:
+	_on_ping()
+
+
 # ---------------------------------------------------------------------------
 # Handlers. Each project overrides only the half it implements.
 # ---------------------------------------------------------------------------
@@ -184,6 +212,9 @@ func _on_start_match(_sender_id: int) -> void:
 func _on_relay(_sender_id: int, _payload: Dictionary) -> void:
 	pass
 
+func _on_pong(_sender_id: int) -> void:
+	pass
+
 func _on_welcome(_peer_id: int, _protocol_version: int) -> void:
 	pass
 
@@ -200,6 +231,9 @@ func _on_room_error(_code: String, _message: String) -> void:
 	pass
 
 func _on_relayed(_from_id: int, _payload: Dictionary) -> void:
+	pass
+
+func _on_ping() -> void:
 	pass
 
 
