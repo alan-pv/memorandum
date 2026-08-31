@@ -13,9 +13,9 @@ var display_name: String = "Player"
 var is_human: bool = true
 
 
-func setup(p_index: int, p_name: String, _config: GameConfig) -> void:
+func setup(p_index: int, slot: PlayerSlot) -> void:
 	player_index = p_index
-	display_name = p_name
+	display_name = slot.display_name
 
 
 func request_pick(_state: GameState) -> void:

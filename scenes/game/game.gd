@@ -10,7 +10,6 @@ extends Control
 var config: GameConfig
 var state: GameState
 var players: Array[Player] = []
-
 var turns_taken: int = 0
 var elapsed_seconds: float = 0.0
 
@@ -42,22 +41,24 @@ func _ready() -> void:
 func _create_players() -> void:
 	players.clear()
 
-	var human := HumanPlayer.new()
-	human.name = "Player1"
-	human.setup(0, config.player_names[0], config)
-	add_child(human)
-	players.append(human)
+	for i in config.players.size():
+		var slot := config.players[i]
+		var player := _player_for_slot(slot)
+		player.name = "Seat%d" % i
+		player.setup(i, slot)
+		add_child(player)
+		players.append(player)
 
-	var second: Player
-	if config.opponent == GameConfig.Opponent.BOT:
-		second = BotPlayer.new()
-		second.name = "Bot"
-	else:
-		second = HumanPlayer.new()
-		second.name = "Player2"
-	second.setup(1, config.player_names[1], config)
-	add_child(second)
-	players.append(second)
+
+func _player_for_slot(slot: PlayerSlot) -> Player:
+	match slot.kind:
+		PlayerSlot.Kind.BOT:
+			return BotPlayer.new()
+		PlayerSlot.Kind.REMOTE:
+			push_error("Remote seats are not playable yet: the online mode lands in a later phase.")
+			return HumanPlayer.new()
+		_:
+			return HumanPlayer.new()
 
 
 func _create_state() -> void:

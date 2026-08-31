@@ -8,6 +8,7 @@ var config: GameConfig
 var last_result: Dictionary = {}
 
 var last_difficulty_id: StringName = &"normal"
+
 var master_volume: float = 1.0
 var sfx_volume: float = 0.8
 
@@ -24,7 +25,9 @@ func start_new_game(new_config: GameConfig) -> void:
 
 
 func player_count() -> int:
-	return 2
+	if config == null:
+		return 2
+	return config.player_count()
 
 
 

@@ -1,28 +1,39 @@
 extends Control
 
-## Opponent and difficulty selection.
+## Table setup and difficulty selection.
 
 
 @export var presets: Array[DifficultyPreset] = []
 
+@onready var _seats_holder: VBoxContainer = %SeatsHolder
 @onready var _preset_container: VBoxContainer = %PresetContainer
-@onready var _vs_bot_button: Button = %VsBotButton
-@onready var _vs_human_button: Button = %VsHumanButton
 @onready var _custom_button: Button = %CustomButton
 @onready var _back_button: Button = %BackButton
 
-var _opponent: GameConfig.Opponent = GameConfig.Opponent.BOT
+var _seats_editor: PlayerSlotsEditor
 
 
 func _ready() -> void:
-	_vs_bot_button.pressed.connect(_select_opponent.bind(GameConfig.Opponent.BOT))
-	_vs_human_button.pressed.connect(_select_opponent.bind(GameConfig.Opponent.HUMAN))
-	_vs_human_button.pressed.connect(_on_custom_pressed)
 	_custom_button.pressed.connect(_on_custom_pressed)
 	_back_button.pressed.connect(_on_back_pressed)
 
-	_select_opponent(GameConfig.Opponent.BOT)
+	_build_seats_editor()
 	_build_preset_buttons()
+
+
+func _build_seats_editor() -> void:
+	_seats_editor = PlayerSlotsEditor.new()
+	# The preset owns bot difficulty on this screen, so no per-bot slider here.
+	_seats_editor.show_bot_tuning = false
+	_seats_holder.add_child(_seats_editor)
+
+	# Declared typed on its own line: a ternary that can yield a bare []
+	# would hand setup() a plain Array and blow up on the typed parameter.
+	var starting: Array[PlayerSlot] = []
+	if GameSettings.config != null:
+		starting = GameSettings.config.players
+	if not starting.is_empty():
+		_seats_editor.setup(starting)
 
 
 func _build_preset_buttons() -> void:
@@ -49,23 +60,19 @@ func _build_preset_buttons() -> void:
 	_preset_container.get_child(0).grab_focus()
 
 
-func _select_opponent(value: GameConfig.Opponent) -> void:
-	_opponent = value
-	_vs_bot_button.button_pressed = value == GameConfig.Opponent.BOT
-	_vs_human_button.button_pressed = value == GameConfig.Opponent.HUMAN
-
-
 func _on_preset_pressed(preset: DifficultyPreset) -> void:
+	var config := preset.to_config(_seats_editor.seats)
+	if not config.is_valid():
+		push_warning("That table cannot be played: " + config.validation_error())
+		return
 	GameSettings.last_difficulty_id = preset.id
-	GameSettings.start_new_game(preset.to_config(_opponent))
+	GameSettings.start_new_game(config)
 	SceneSwitcher.go_to(SceneSwitcher.GAME)
 
 
 func _on_custom_pressed() -> void:
 	var base := GameConfig.new()
-	base.opponent = _opponent
-	if _opponent == GameConfig.Opponent.HUMAN:
-		base.player_names = PackedStringArray(["Player 1", "Player 2"])
+	base.players = _seats_editor.seats.duplicate()
 	GameSettings.config = base
 	SceneSwitcher.go_to(SceneSwitcher.CUSTOM_SETUP)
 
