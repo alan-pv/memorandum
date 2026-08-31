@@ -3,11 +3,9 @@ extends Control
 ## The lobby browser: connect to a relay, look at the rooms, make one or join one.
 
 
-const NET_SETTINGS_DIR := "res://resources/net"
 const REFRESH_SECONDS := 3.0
 
 @onready var _name_field: LineEdit = %NameField
-@onready var _server_option: OptionButton = %ServerOption
 @onready var _connect_button: Button = %ConnectButton
 @onready var _status_label: Label = %StatusLabel
 @onready var _refresh_button: Button = %RefreshButton
@@ -23,7 +21,6 @@ const REFRESH_SECONDS := 3.0
 @onready var _create_button: Button = %CreateButton
 @onready var _back_button: Button = %BackButton
 
-var _servers: Array[NetSettings] = []
 var _rooms: Array = []
 var _pending_room_id: String = ""
 var _refresh_timer: Timer
@@ -33,7 +30,6 @@ func _ready() -> void:
 	_name_field.text = GameSettings.player_name
 	_room_name_field.placeholder_text = "%s's room" % GameSettings.player_name
 
-	_fill_servers()
 	_fill_max_players()
 	_build_refresh_timer()
 
@@ -59,17 +55,6 @@ func _ready() -> void:
 		Rooms.refresh()
 
 
-func _fill_servers() -> void:
-	_servers = _load_servers()
-	_server_option.clear()
-	for settings in _servers:
-		_server_option.add_item(settings.label)
-	if not _servers.is_empty():
-		_server_option.selected = 0
-	# Reconnecting to a different relay would drop the room we are browsing.
-	_server_option.disabled = _servers.size() < 2
-
-
 func _fill_max_players() -> void:
 	_max_players_option.clear()
 	for count in range(NetProtocol.MIN_PLAYERS, NetProtocol.MAX_PLAYERS + 1):
@@ -84,25 +69,6 @@ func _build_refresh_timer() -> void:
 	add_child(_refresh_timer)
 
 
-## Every relay the build knows about, so switching environments is picking one
-## from a list instead of editing a URL.
-func _load_servers() -> Array[NetSettings]:
-	var found: Array[NetSettings] = []
-	var dir := DirAccess.open(NET_SETTINGS_DIR)
-	if dir == null:
-		push_error("No network settings in %s" % NET_SETTINGS_DIR)
-		return found
-	for file_name in dir.get_files():
-		var clean := file_name.trim_suffix(".remap")
-		if not clean.ends_with(".tres"):
-			continue
-		var settings := load("%s/%s" % [NET_SETTINGS_DIR, clean]) as NetSettings
-		if settings != null:
-			found.append(settings)
-	found.sort_custom(func(a: NetSettings, b: NetSettings) -> bool: return a.label < b.label)
-	return found
-
-
 # ---------------------------------------------------------------------------
 # Connecting
 # ---------------------------------------------------------------------------
@@ -111,14 +77,10 @@ func _on_connect_pressed() -> void:
 	if Net.is_online():
 		Net.disconnect_from_server()
 		return
-	if _servers.is_empty():
-		_say("This build has no relay configured.")
-		return
-
 	GameSettings.player_name = _clean_name()
 	_name_field.text = GameSettings.player_name
 
-	var settings := _servers[maxi(0, _server_option.selected)]
+	var settings := NetSettings.new()
 	_say("Connecting to %s..." % settings.url)
 	Net.connect_to_server(settings, GameSettings.player_name)
 

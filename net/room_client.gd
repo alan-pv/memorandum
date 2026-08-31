@@ -44,13 +44,6 @@ func member_ids() -> Array[int]:
 	return ids
 
 
-func member_names() -> PackedStringArray:
-	var names := PackedStringArray()
-	for member in current.get("members", []):
-		names.append(str(member.get("name", "Player")))
-	return names
-
-
 func everyone_ready() -> bool:
 	var members: Array = current.get("members", [])
 	if members.size() < NetProtocol.MIN_PLAYERS:

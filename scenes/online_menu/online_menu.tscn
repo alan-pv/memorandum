@@ -50,11 +50,6 @@ size_flags_horizontal = 3
 max_length = 16
 placeholder_text = "Your name"
 
-[node name="ServerOption" type="OptionButton" parent="Center/Panel/VBox/ConnectRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(150, 0)
-layout_mode = 2
-
 [node name="ConnectButton" type="Button" parent="Center/Panel/VBox/ConnectRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(110, 0)
