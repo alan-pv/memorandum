@@ -35,7 +35,30 @@ Where it listens is one line in `/etc/default/memorandum-relay`:
 
 A browser on an `https://` page refuses to open a `ws://` socket, so anything
 published needs `wss://`, which needs a certificate, which needs a domain name.
-Two ways to get one.
+Three ways to get one, in the order they are worth trying.
+
+### Cloudflare Tunnel and a domain of your own
+
+The recommended route. Nothing is opened on the router, the tunnel dials *out*
+to Cloudflare, and Cloudflare terminates TLS for the domain — so it works behind
+CGNAT and the home IP address never appears in a DNS record.
+
+    sudo apt-get install cloudflared          # from pkg.cloudflare.com
+    cloudflared tunnel login                  # one click in a browser
+    cloudflared tunnel create memorandum-relay
+    cloudflared tunnel route dns memorandum-relay play.example.com
+
+Then `cloudflared.example.yml` becomes `/etc/cloudflared/config.yml`, and
+`sudo cloudflared service install` turns it into a systemd service.
+
+Two things it does not share with the Funnel below. Cloudflare **does not strip
+the path prefix**, so Godot is handed `/ws` rather than `/` — it accepts either,
+but a proxy that strips and one that does not are not interchangeable. And
+Cloudflare closes a WebSocket it believes has been idle for around 100 seconds,
+which is why the protocol carries its own keepalive.
+
+The credentials JSON that `tunnel create` writes is a private key for the
+tunnel. It stays in `/etc/cloudflared/` and never enters the repository.
 
 ### Tailscale Funnel
 
@@ -56,15 +79,27 @@ It needs two things enabled for the tailnet, both in the admin console: HTTPS
 certificates (DNS page) and Funnel itself — running the command above prints the
 exact link when it is missing.
 
-### Caddy and a domain of your own
+**It cannot be tested from a machine on the tailnet.** MagicDNS resolves the
+`ts.net` name to the tailnet address, so a device running Tailscale reaches the
+relay over the tailnet and never touches the public ingress at all — the one
+device that proves nothing is your own. Worse, a device whose Tailscale is
+logged out or expired resolves the name to an address it cannot reach and fails
+where a stranger with no Tailscale at all would have succeeded. Test it by
+resolving the name against a public resolver and connecting to *that* address:
 
-`Caddyfile.example` has the site block, for both the HTTP-01 challenge and the
-DNS-01 one you need when the ISP blocks port 80. `duckdns.env.example` and
-`duckdns-update.sh` cover a dynamic address. Set `RELAY_BIND=127.0.0.1` first:
-from then on the thing facing the internet is Caddy, not the game server.
+    dig +short @1.1.1.1 A <machine>.<tailnet>.ts.net
 
-The real `Caddyfile` and `duckdns.env` are in `.gitignore`. The DNS token is a
-password and does not belong in a repository.
+A domain of your own has none of this problem, which is the real argument for
+moving off `ts.net` once something is published.
+
+### A reverse proxy on the machine itself
+
+Caddy or nginx terminating TLS on the Pi, with the router forwarding 80 and 443.
+It works, and it is what the deploy files here used to cover, but it is strictly
+worse than the tunnel above: it needs the router configured, it fails outright
+behind CGNAT, it puts the home IP address in a public DNS record, and the
+certificate becomes yours to keep renewing. Set `RELAY_BIND=127.0.0.1` and point
+the proxy at it, exactly as the tunnel does.
 
 ## Watching it
 

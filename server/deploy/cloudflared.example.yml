@@ -1,0 +1,37 @@
+# Cloudflare Tunnel in front of the relay. Copy to /etc/cloudflared/config.yml,
+# fill in the tunnel id and the hostname, then:
+#
+#   sudo cloudflared service install
+#   sudo systemctl enable --now cloudflared
+#
+# Set RELAY_BIND=127.0.0.1 in /etc/default/memorandum-relay first: from here on
+# the thing facing the internet is the tunnel, not the game server.
+#
+# Nothing is opened on the router and no certificate is managed here. The tunnel
+# dials *out* to Cloudflare and Cloudflare terminates TLS for the domain, which
+# is why this works behind CGNAT and why the home IP address never appears in a
+# DNS record.
+
+tunnel: REPLACE-WITH-TUNNEL-ID
+credentials-file: /etc/cloudflared/REPLACE-WITH-TUNNEL-ID.json
+
+# Cloudflare closes a WebSocket it believes is idle at around 100 seconds, and a
+# turn-based game is idle for minutes while somebody stares at the board. That
+# is handled in the protocol (NetProtocol.KEEPALIVE_SECONDS), not here.
+
+ingress:
+  # The WebSocket. Cloudflare passes the Upgrade handshake through untouched,
+  # and unlike Tailscale's --set-path it does not strip the prefix: Godot's
+  # server is handed /ws and accepts it.
+  - hostname: REPLACE-WITH-YOUR-HOSTNAME
+    path: ^/ws
+    service: http://127.0.0.1:8080
+
+  # Anything else on that hostname stops here and never reaches Godot. A public
+  # host collects crawlers within the hour, and every one that reaches a
+  # WebSocket server logs "Missing or invalid header 'upgrade'".
+  - hostname: REPLACE-WITH-YOUR-HOSTNAME
+    service: http_status:404
+
+  # cloudflared requires a catch-all as the last rule.
+  - service: http_status:404
