@@ -144,7 +144,7 @@ func _on_create_room(sender_id: int, room_name: String, password_hash: String, m
 	if not info.room_id.is_empty():
 		_fail(sender_id, ERR_ALREADY_IN_ROOM)
 		return
-	if _rooms.size() >= MAX_ROOMS:
+	if _room_count_for(info.game_id) >= MAX_ROOMS:
 		_fail(sender_id, ERR_SERVER_FULL)
 		return
 
@@ -188,7 +188,10 @@ func _on_join_room(sender_id: int, room_id: String, password_hash: String) -> vo
 		return
 
 	var room: Room = _rooms.get(room_id.strip_edges().to_upper())
-	if room == null:
+	# A room belonging to another game is answered as though it did not exist:
+	# a client that speaks a different protocol has no business inside it, and
+	# the reply gives away nothing about what else the relay is hosting.
+	if room == null or room.game_id != info.game_id:
 		_fail(sender_id, ERR_NO_SUCH_ROOM)
 		return
 	if room.in_progress:
@@ -301,6 +304,14 @@ func _remove_from_room(peer_id: int) -> void:
 		_send_room_state(room)
 
 	_broadcast_room_list()
+
+
+func _room_count_for(game_id: String) -> int:
+	var total := 0
+	for room: Room in _rooms.values():
+		if room.game_id == game_id:
+			total += 1
+	return total
 
 
 func _room_of(peer_id: int) -> Room:

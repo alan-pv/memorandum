@@ -19,6 +19,8 @@ const DEFAULT_PORT := 8080
 ## ever have to know that, so the socket is kept warm from down here.
 const KEEPALIVE_SECONDS := 30.0
 
+## Per game, not for the whole relay: one popular game must not be able to
+## lock every other one out.
 const MAX_ROOMS := 10
 const MIN_PLAYERS := 2
 const MAX_PLAYERS := 4
