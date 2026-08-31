@@ -1,0 +1,165 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/online_menu/online_menu.gd" id="1_online"]
+
+[node name="OnlineMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_online")
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="Center"]
+custom_minimum_size = Vector2(620, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Center/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Play online"
+horizontal_alignment = 1
+
+[node name="ConnectRow" type="HBoxContainer" parent="Center/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="NameLabel" type="Label" parent="Center/Panel/VBox/ConnectRow"]
+layout_mode = 2
+text = "Name"
+
+[node name="NameField" type="LineEdit" parent="Center/Panel/VBox/ConnectRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+max_length = 16
+placeholder_text = "Your name"
+
+[node name="ServerOption" type="OptionButton" parent="Center/Panel/VBox/ConnectRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+
+[node name="ConnectButton" type="Button" parent="Center/Panel/VBox/ConnectRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Connect"
+
+[node name="StatusLabel" type="Label" parent="Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6980392, 0.6980392, 0.6980392, 1)
+theme_override_font_sizes/font_size = 15
+text = "Not connected."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Separator" type="HSeparator" parent="Center/Panel/VBox"]
+layout_mode = 2
+
+[node name="RoomsHeader" type="HBoxContainer" parent="Center/Panel/VBox"]
+layout_mode = 2
+
+[node name="RoomsTitle" type="Label" parent="Center/Panel/VBox/RoomsHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "Rooms"
+
+[node name="RefreshButton" type="Button" parent="Center/Panel/VBox/RoomsHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Refresh"
+
+[node name="RoomScroll" type="ScrollContainer" parent="Center/Panel/VBox"]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="RoomList" type="VBoxContainer" parent="Center/Panel/VBox/RoomScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="JoinPanel" type="PanelContainer" parent="Center/Panel/VBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="JoinRow" type="HBoxContainer" parent="Center/Panel/VBox/JoinPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="JoinLabel" type="Label" parent="Center/Panel/VBox/JoinPanel/JoinRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Password"
+
+[node name="JoinPasswordField" type="LineEdit" parent="Center/Panel/VBox/JoinPanel/JoinRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+secret = true
+
+[node name="JoinConfirmButton" type="Button" parent="Center/Panel/VBox/JoinPanel/JoinRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Join"
+
+[node name="JoinCancelButton" type="Button" parent="Center/Panel/VBox/JoinPanel/JoinRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Cancel"
+
+[node name="Separator2" type="HSeparator" parent="Center/Panel/VBox"]
+layout_mode = 2
+
+[node name="CreateRow" type="HBoxContainer" parent="Center/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RoomNameField" type="LineEdit" parent="Center/Panel/VBox/CreateRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_length = 24
+placeholder_text = "Room name"
+
+[node name="RoomPasswordField" type="LineEdit" parent="Center/Panel/VBox/CreateRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+secret = true
+placeholder_text = "Password"
+
+[node name="MaxPlayersOption" type="OptionButton" parent="Center/Panel/VBox/CreateRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+
+[node name="CreateButton" type="Button" parent="Center/Panel/VBox/CreateRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Create"
+
+[node name="BackButton" type="Button" parent="Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Back"

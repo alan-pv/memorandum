@@ -8,6 +8,8 @@ const DIFFICULTY_MENU := "res://scenes/difficulty_menu/difficulty_menu.tscn"
 const CUSTOM_SETUP := "res://scenes/custom_setup/custom_setup.tscn"
 const GAME := "res://scenes/game/game.tscn"
 const RESULTS := "res://scenes/results/results_screen.tscn"
+const ONLINE_MENU := "res://scenes/online_menu/online_menu.tscn"
+const ROOM_LOBBY := "res://scenes/room_lobby/room_lobby.tscn"
 
 const FADE_TIME := 0.22
 
