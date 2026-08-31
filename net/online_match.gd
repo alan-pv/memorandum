@@ -39,6 +39,12 @@ const T_PICK := "pick"
 ## Referee -> everyone: "card i is flipped." The only message that moves a game.
 const T_CONFIRM := "confirm"
 
+# Both `pick` and `confirm` carry the turn they belong to under "k". Without it
+# a client that is a moment behind — a browser on a slow machine, animating one
+# turn while the referee has already confirmed the first pick of the next —
+# would throw that confirm away with the turn that ended, and from then on it
+# would be playing a different game from everybody else.
+
 ## A guest that never answers a ping is a tab that was closed during the fade.
 const READY_TIMEOUT := 20.0
 const PING_SECONDS := 0.4
@@ -50,10 +56,20 @@ var is_referee: bool = false
 var local_peer_id: int = 0
 var referee_peer_id: int = 0
 
-## Picks the referee has confirmed and the turn loop has not flipped yet.
-## The referee counts them when validating: without that, a player clicking
-## three cards quickly would collect three confirms for a group of two.
+## Picks confirmed for the turn being played and not flipped yet. The referee
+## counts them when validating: without that, a player clicking three cards
+## quickly would collect three confirms for a group of two.
 var confirmed_picks: Array[int] = []
+
+## Which turn this client is playing. It is the same number on every client at
+## the same point in the stream, so it is what a confirm is tagged with.
+var turn_number: int = 0
+
+## Confirms for a turn this client has not reached yet. A slow client — a
+## browser on a phone, say — can still be animating one turn while the referee
+## has already confirmed the first pick of the next; those confirms wait here
+## instead of being thrown away with the turn that ended.
+var _ahead: Array[Dictionary] = []
 
 var _players: Array[NetPlayer] = []
 var _waiting: NetPlayer = null
@@ -141,9 +157,9 @@ func request(index: int) -> void:
 	if _finished:
 		return
 	if is_referee:
-		_judge(local_peer_id, index)
+		_judge(local_peer_id, index, turn_number)
 	else:
-		_send({"t": T_PICK, "i": index})
+		_send({"t": T_PICK, "i": index, "k": turn_number})
 
 
 ## The seat whose turn it is announces it is listening. Answers with a pick
@@ -155,12 +171,24 @@ func claim(player: NetPlayer) -> int:
 	return -1
 
 
-## A turn that ended early — a mismatch with `early_abort` on — can leave a
-## confirm nobody will ever flip. Every client drops it at exactly the same
-## point in the same stream, so dropping it keeps them in step.
+## Closes the turn and opens the next one.
+##
+## Anything still queued belonged to the turn that just ended — a turn cut short
+## by `early_abort` can leave a confirm nobody will ever flip — so it goes.
+## Anything that arrived tagged for the turn we are about to start was waiting
+## for exactly this moment.
 func end_turn() -> void:
 	_waiting = null
 	confirmed_picks.clear()
+	turn_number += 1
+
+	var still_ahead: Array[Dictionary] = []
+	for entry in _ahead:
+		if int(entry.get("k", -1)) == turn_number:
+			confirmed_picks.append(int(entry.get("i", -1)))
+		elif int(entry.get("k", -1)) > turn_number:
+			still_ahead.append(entry)
+	_ahead = still_ahead
 
 
 func finish() -> void:
@@ -170,20 +198,34 @@ func finish() -> void:
 
 ## The referee's verdict on a request. Everything that reaches the wire has
 ## already been through may_pick().
-func _judge(from_peer: int, index: int) -> void:
+func _judge(from_peer: int, index: int, turn: int) -> void:
 	if not is_referee or state == null:
+		return
+	# A request tagged with a turn that is over is a click that took the long
+	# way round. Honouring it would flip a card its sender was not looking at.
+	if turn != turn_number:
 		return
 	if not may_pick(from_peer, index):
 		return
-	_send({"t": T_CONFIRM, "i": index})
-	_accept(index)
+	_send({"t": T_CONFIRM, "i": index, "k": turn_number})
+	_accept(index, turn_number)
 
 
 ## A confirmed pick, from the referee or from ourselves. It goes to the seat
-## that is waiting for it, or into the queue until that seat asks.
-func _accept(index: int) -> void:
+## that is waiting for it, or into the queue until that seat asks — and if it is
+## for a turn this client has not reached, it waits for that turn instead.
+func _accept(index: int, turn: int) -> void:
 	if state == null or index < 0 or index >= state.cards.size():
 		return
+	if turn > turn_number:
+		_ahead.append({"k": turn, "i": index})
+		return
+	if turn < turn_number:
+		# A confirm for a turn already closed here. It cannot be replayed
+		# without desyncing, and it should never happen: say so out loud.
+		push_warning("Dropped a confirm for turn %d while playing turn %d." % [turn, turn_number])
+		return
+
 	confirmed_picks.append(index)
 	if _waiting == null:
 		return
@@ -240,12 +282,12 @@ func _on_payload(from_id: int, payload: Dictionary) -> void:
 			if is_referee and not _arrived.has(from_id):
 				_arrived.append(from_id)
 		T_PICK:
-			_judge(from_id, int(payload.get("i", -1)))
+			_judge(from_id, int(payload.get("i", -1)), int(payload.get("k", -1)))
 		T_CONFIRM:
 			# Only the referee gets to move the game on. Anyone else claiming
 			# to have confirmed something is a client that has been tampered with.
 			if not is_referee and from_id == referee_peer_id:
-				_accept(int(payload.get("i", -1)))
+				_accept(int(payload.get("i", -1)), int(payload.get("k", turn_number)))
 
 
 ## The relay resends the whole room whenever it changes, so a member who is no
