@@ -3,7 +3,8 @@
 A memory match game built with **Godot 4.7** (GDScript).
 
 Flip cards, find the matching groups, and play against a bot with tunable
-memory or against someone on the same keyboard.
+memory, against someone on the same keyboard, or against people in other
+browsers.
 
 ![A match in progress](docs/gameplay.gif)
 
@@ -16,7 +17,10 @@ memory or against someone on the same keyboard.
 - **A bot with a probabilistic memory**: it forgets what it has seen according
   to a `bot_memory` value between 0 and 1, so "hard" means a better opponent
   rather than a bigger board.
-- **Local two-player mode**, taking turns on the same device.
+- **Local play for two to four**, taking turns on the same device.
+- **Online play for two to four**, in a browser or on the desktop: browse
+  rooms, create one with an optional password, fill the empty seats with bots,
+  and start.
 - Sound effects, an animated shader background, a staggered UI intro and a
   shared theme.
 
@@ -31,6 +35,12 @@ Open the project folder with Godot 4.7 or newer and press <kbd>F5</kbd>.
 There is nothing to install and no plugins to enable. The main scene is
 `scenes/main_menu/main_menu.tscn`.
 
+Online play needs a relay to sit between the players, because a browser can
+open connections but never accept them. One lives in `server/` — see
+[server/deploy/README.md](server/deploy/README.md) to put it on a machine of
+your own. `resources/net/` holds the addresses; the game ships pointing at the
+public one.
+
 ## Architecture
 
 Four layers, with dependencies pointing only downwards:
@@ -40,6 +50,9 @@ Four layers, with dependencies pointing only downwards:
   3. ACTORS     players/    who makes the decisions
   2. CORE       core/       pure logic, zero nodes, testable
   1. SERVICES   autoloads/  things that survive a scene change
+
+     NETWORK    net/        the wire, bolted on at the services layer
+     RELAY      server/     a standalone Godot project, deployed on its own
 ```
 
 The rules that hold it together:
@@ -54,10 +67,23 @@ The rules that hold it together:
 - **Configuration as data**, not code: the difficulties are `.tres` files, so
   balancing the game stopped being programming.
 
+Online play adds one idea rather than a second code path. The relay is
+**game-agnostic** — it knows peers, rooms and passwords, and forwards the rest
+without looking inside, so the same binary serves any game whose clients agree
+on a `game_id`. The client that created the room acts as **referee**: a click
+only *asks*, and the turn loop advances for everyone on the referee's
+confirmation. The game is deterministic given the deck, the config and the
+sequence of picks, so every client runs the same `game.gd` and the entire
+networked state of a match is a list of integers.
+
 ## Status
 
-Everything playable is implemented. Nothing is persisted between runs yet —
-records and preferences are lost when the game closes.
+Everything playable is implemented, locally and online. Nothing is persisted
+between runs yet — records and preferences are lost when the game closes.
+
+Known limits of online play: the match ends if the referee closes the tab, and
+a room can only be found in the public list, since there is nowhere to type a
+room code yet.
 
 ## License
 

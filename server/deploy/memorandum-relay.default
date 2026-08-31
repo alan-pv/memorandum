@@ -1,0 +1,10 @@
+# Where the relay listens. Copy to /etc/default/memorandum-relay.
+#
+# RELAY_BIND=127.0.0.1        only this machine — the right answer once a
+#                             reverse proxy (Caddy, Tailscale Funnel) is the
+#                             thing facing the world.
+# RELAY_BIND=<tailscale ip>   reachable from the tailnet and nowhere else.
+# RELAY_BIND=0.0.0.0          everything the machine can be reached on. Only
+#                             behind a firewall you trust.
+RELAY_PORT=8080
+RELAY_BIND=127.0.0.1

@@ -1,0 +1,46 @@
+# Godot room relay as a systemd service.
+#
+#   sudo cp memorandum-relay.service /etc/systemd/system/
+#   sudo cp memorandum-relay.default /etc/default/memorandum-relay
+#   sudo systemctl daemon-reload && sudo systemctl enable --now memorandum-relay
+#
+# The port and the address it binds to live in /etc/default/memorandum-relay,
+# so moving from "reachable over the tailnet" to "only reachable by the reverse
+# proxy on this machine" is one line and a restart.
+
+[Unit]
+Description=Memorandum room relay (game-agnostic WebSocket rooms)
+Documentation=https://github.com/APV-DevGame/memorandum
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=memorandum
+Group=memorandum
+EnvironmentFile=/etc/default/memorandum-relay
+# stdbuf: Godot block-buffers stdout when it is not a terminal, so without this
+# the relay's own lines only reach journalctl in bursts of 4 KB.
+ExecStart=/usr/bin/stdbuf -oL /opt/memorandum-relay/memorandum-relay --headless -- --port=${RELAY_PORT} --bind=${RELAY_BIND}
+Restart=always
+RestartSec=3
+
+# Godot writes its user data under $HOME; give it one it is allowed to write to.
+StateDirectory=memorandum-relay
+Environment=HOME=/var/lib/memorandum-relay
+
+# Nothing here needs privileges, a home directory or a writable filesystem.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=false
+
+[Install]
+WantedBy=multi-user.target

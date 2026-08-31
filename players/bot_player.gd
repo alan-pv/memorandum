@@ -8,11 +8,11 @@ var memory: BotMemory
 var think_time: float = 0.15
 
 
-func setup(p_index: int, p_name: String, config: GameConfig) -> void:
-	super.setup(p_index, p_name, config)
+func setup(p_index: int, slot: PlayerSlot) -> void:
+	super.setup(p_index, slot)
 	is_human = false
-	think_time = config.bot_think_time
-	memory = BotMemory.new(config.bot_memory)
+	think_time = slot.bot_think_time
+	memory = BotMemory.new(slot.bot_memory)
 
 
 func observe(index: int, card: CardData) -> void:

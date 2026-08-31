@@ -33,9 +33,15 @@ static func is_board_cleared(matched: Array[bool]) -> bool:
 	return not matched.has(false)
 
 
+## Returns the SEAT of the winner, or -1 when the top score is shared.
+##
+## The seat is the POSITION in the array, not the value stored there: the old
+## two-player version answered `scores[0]` / `scores[1]`, so on a 6-4 it said
+## "6" and the results screen found no such player and showed no winner.
 static func winner_index(scores: Array[int]) -> int:
-	if (scores[0] > scores[1]):
-		return scores[0]
-	if (scores[0] < scores[1]):
-		return scores[1]
-	return -1
+	if scores.is_empty():
+		return -1
+	var best: int = scores.max()
+	if scores.count(best) > 1:
+		return -1
+	return scores.find(best)

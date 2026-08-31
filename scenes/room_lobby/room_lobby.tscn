@@ -1,0 +1,143 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/room_lobby/room_lobby.gd" id="1_lobby"]
+
+[node name="RoomLobby" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lobby")
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="Center"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Room"
+horizontal_alignment = 1
+
+[node name="CodeLabel" type="Label" parent="Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6980392, 0.6980392, 0.6980392, 1)
+theme_override_font_sizes/font_size = 15
+text = "Code —"
+horizontal_alignment = 1
+
+[node name="Separator" type="HSeparator" parent="Center/Panel/VBox"]
+layout_mode = 2
+
+[node name="SeatList" type="VBoxContainer" parent="Center/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HostBox" type="VBoxContainer" parent="Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Separator2" type="HSeparator" parent="Center/Panel/VBox/HostBox"]
+layout_mode = 2
+
+[node name="BotRow" type="HBoxContainer" parent="Center/Panel/VBox/HostBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BotLabel" type="Label" parent="Center/Panel/VBox/HostBox/BotRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Bots"
+
+[node name="RemoveBotButton" type="Button" parent="Center/Panel/VBox/HostBox/BotRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(44, 0)
+layout_mode = 2
+text = "-"
+
+[node name="BotCountLabel" type="Label" parent="Center/Panel/VBox/HostBox/BotRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "0"
+horizontal_alignment = 1
+
+[node name="AddBotButton" type="Button" parent="Center/Panel/VBox/HostBox/BotRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(44, 0)
+layout_mode = 2
+text = "+"
+
+[node name="DifficultyRow" type="HBoxContainer" parent="Center/Panel/VBox/HostBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DifficultyLabel" type="Label" parent="Center/Panel/VBox/HostBox/DifficultyRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Difficulty"
+
+[node name="DifficultyOption" type="OptionButton" parent="Center/Panel/VBox/HostBox/DifficultyRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+
+[node name="SummaryLabel" type="Label" parent="Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.909804, 0.929412, 0.952941, 1)
+theme_override_font_sizes/font_size = 17
+text = "—"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="StatusLabel" type="Label" parent="Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.721569, 0.482353, 0.482353, 1)
+theme_override_font_sizes/font_size = 15
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Buttons" type="HBoxContainer" parent="Center/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LeaveButton" type="Button" parent="Center/Panel/VBox/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Leave"
+
+[node name="ReadyButton" type="Button" parent="Center/Panel/VBox/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+text = "Ready"
+
+[node name="StartButton" type="Button" parent="Center/Panel/VBox/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Start"

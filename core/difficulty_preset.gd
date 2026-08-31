@@ -22,16 +22,29 @@ extends Resource
 @export_range(0.2, 3.0, 0.1) var reveal_time: float = 1.0
 
 
-func to_config(opponent: GameConfig.Opponent = GameConfig.Opponent.BOT) -> GameConfig:
+## Builds a match from this preset for the given seats. The seats decide who
+## plays; the preset decides the board and how sharp the bots are.
+func to_config(seats: Array[PlayerSlot]) -> GameConfig:
 	var config := GameConfig.new()
 	config.group_size = group_size
 	config.total_cards = total_cards
-	config.bot_memory = bot_memory
-	config.bot_think_time = bot_think_time
 	config.reveal_time = reveal_time
-	config.opponent = opponent
-	if opponent == GameConfig.Opponent.HUMAN:
-		config.player_names = PackedStringArray(["Player 1", "Player 2"])
-	else:
-		config.player_names = PackedStringArray(["You", "Bot"])
+
+	# The preset owns how sharp the bots are: that is what Easy/Normal/Hard
+	# means here. Every bot seat is retuned, keeping whatever name it carries.
+	var tuned: Array[PlayerSlot] = []
+	for seat in seats:
+		tuned.append(make_bot_slot(seat.display_name) if seat.is_bot() else seat)
+	config.players = tuned
 	return config
+
+
+## A bot tuned to this difficulty, ready to drop into a seat.
+func make_bot_slot(bot_name: String = "Bot") -> PlayerSlot:
+	return PlayerSlot.bot(bot_name, bot_memory, bot_think_time)
+
+
+## The seats a match uses when nobody has chosen anything: you against one bot.
+func default_seats() -> Array[PlayerSlot]:
+	var seats: Array[PlayerSlot] = [PlayerSlot.human("You"), make_bot_slot()]
+	return seats

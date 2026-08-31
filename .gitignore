@@ -5,3 +5,8 @@
 # Editor / OS backup files
 *~
 *.bak
+build/
+
+# Deployment files that carry real secrets. Only the .example versions belong
+# in the repository.
+server/deploy/cloudflared.yml
