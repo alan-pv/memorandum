@@ -7,6 +7,10 @@ var config: GameConfig
 
 var last_result: Dictionary = {}
 
+## The deck the referee shuffled, as the values it sent. Empty offline, where
+## every device builds its own.
+var online_deck: PackedInt32Array = PackedInt32Array()
+
 var last_difficulty_id: StringName = &"normal"
 
 var master_volume: float = 1.0
@@ -21,6 +25,16 @@ func _ready() -> void:
 
 func start_new_game(new_config: GameConfig) -> void:
 	config = new_config
+	online_deck = PackedInt32Array()
+	last_result = {}
+
+
+## Same thing for a match that arrives from the network: the config and the
+## deck were both decided in the lobby, and the game scene only reads them.
+func start_online_game(new_config: GameConfig, deck_values: PackedInt32Array) -> void:
+	new_config.online = true
+	config = new_config
+	online_deck = deck_values
 	last_result = {}
 
 

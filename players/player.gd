@@ -22,6 +22,13 @@ func request_pick(_state: GameState) -> void:
 	push_error("%s does not implement request_pick()" % get_class())
 
 
+## A click on the board reaches every seat; only the one waiting for it cares.
+## Routing it to all of them is what keeps `if player is HumanPlayer` out of
+## game.gd, and it is how the same click works offline and online.
+func on_card_clicked(_index: int) -> void:
+	pass
+
+
 func observe(_index: int, _card: CardData) -> void:
 	pass
 

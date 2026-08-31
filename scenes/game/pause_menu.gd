@@ -22,6 +22,12 @@ func _ready() -> void:
 	_quit_button.pressed.connect(func() -> void: quit_requested.emit())
 
 
+## An online match cannot be restarted from one screen: the other three would
+## still be playing the old one. Quitting is still allowed — it leaves the room.
+func set_online(value: bool) -> void:
+	_restart_button.visible = not value
+
+
 func open() -> void:
 	visible = true
 	get_tree().paused = true

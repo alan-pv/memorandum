@@ -10,6 +10,11 @@ extends Control
 var config: GameConfig
 var state: GameState
 var players: Array[Player] = []
+
+## Only exists in an online match. When it is null the whole file behaves
+## exactly as it did before the network existed.
+var online: OnlineMatch = null
+
 var turns_taken: int = 0
 var elapsed_seconds: float = 0.0
 
@@ -23,9 +28,15 @@ func _ready() -> void:
 		config = GameConfig.new()
 		GameSettings.config = config
 
+	if config.online:
+		_create_online()
+
 	_create_players()
 	_create_state()
 	_connect_signals()
+
+	if online != null:
+		online.bind_state(state, players)
 
 	hud.setup(config)
 	board.build(state.cards)
@@ -38,6 +49,18 @@ func _ready() -> void:
 	_run_game()
 
 
+## Sets up the network side before anything else exists, so the seats can ask
+## it who they belong to. The room it reads was left there by the lobby.
+func _create_online() -> void:
+	online = OnlineMatch.new()
+	online.name = "OnlineMatch"
+	add_child(online)
+	online.prepare(config)
+	online.message.connect(_on_online_message)
+	online.aborted.connect(_on_online_aborted)
+	pause_menu.set_online(true)
+
+
 func _create_players() -> void:
 	players.clear()
 
@@ -47,22 +70,35 @@ func _create_players() -> void:
 		player.name = "Seat%d" % i
 		player.setup(i, slot)
 		add_child(player)
+		if player is NetPlayer:
+			(player as NetPlayer).attach(online, online.owns_seat(i), online.referees_seat(i))
 		players.append(player)
 
 
+## Online, every seat is a NetPlayer — yours, theirs and the bots alike. They
+## all wait for the same confirms, so every client runs the identical loop.
 func _player_for_slot(slot: PlayerSlot) -> Player:
+	if config.online:
+		return NetPlayer.new()
+
 	match slot.kind:
 		PlayerSlot.Kind.BOT:
 			return BotPlayer.new()
 		PlayerSlot.Kind.REMOTE:
-			push_error("Remote seats are not playable yet: the online mode lands in a later phase.")
+			push_error("A remote seat needs an online match: this one is local.")
 			return HumanPlayer.new()
 		_:
 			return HumanPlayer.new()
 
 
 func _create_state() -> void:
-	var deck := DeckBuilder.build(config)
+	# Online the deck was shuffled once, by the referee, and travelled with the
+	# config. Shuffling a second one here would be playing a different game.
+	var deck: Array[CardData] = []
+	if config.online:
+		deck = OnlineMatch.deck_from_wire(GameSettings.online_deck, config)
+	else:
+		deck = DeckBuilder.build(config)
 	state = GameState.new()
 	state.setup(config, deck, players.size())
 
@@ -79,13 +115,19 @@ func _connect_signals() -> void:
 
 func _on_board_card_clicked(index: int) -> void:
 	for player in players:
-		if player is HumanPlayer:
-			(player as HumanPlayer).on_card_clicked(index)
+		player.on_card_clicked(index)
 
 
 func _run_game() -> void:
 	_running = true
 	hud.set_turn(state.current_player)
+
+	if online != null:
+		hud.show_message("Waiting for everyone...", 0.0)
+		await online.wait_for_everyone()
+		if not _running:
+			return
+		hud.show_message("", 0.0)
 
 	while _running and not state.is_finished():
 		await _play_turn()
@@ -140,6 +182,8 @@ func _play_turn() -> void:
 	if not _running:
 		return
 
+	if online != null:
+		online.end_turn()
 	state.end_turn(matched)
 
 
@@ -153,6 +197,8 @@ func _selected_cards() -> Array[CardData]:
 func _finish_game() -> void:
 	_running = false
 	board.set_interactive(false)
+	if online != null:
+		online.finish()
 	
 
 	GameSettings.last_result = {
@@ -200,6 +246,24 @@ func _restart() -> void:
 func _quit_to_menu() -> void:
 	_stop()
 	pause_menu.close()
+	if online != null:
+		Rooms.leave()
+	SceneSwitcher.go_to(SceneSwitcher.MAIN_MENU, false)
+
+
+func _on_online_message(text: String) -> void:
+	hud.show_message(text, 2.0)
+
+
+## The referee left, or the connection died. There is no rules engine any more,
+## so the match stops here instead of drifting out of sync in silence.
+func _on_online_aborted(reason: String) -> void:
+	if not _running:
+		return
+	_stop()
+	board.set_interactive(false)
+	hud.show_message(reason, 0.0)
+	await get_tree().create_timer(2.5).timeout
 	SceneSwitcher.go_to(SceneSwitcher.MAIN_MENU, false)
 
 

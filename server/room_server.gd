@@ -15,6 +15,9 @@ class PeerInfo:
 	var room_id: String = ""
 	var ready: bool = false
 	var greeted: bool = false
+	## False from the moment the socket drops. Sending to a peer the multiplayer
+	## layer has already forgotten is an error, not a silent no-op.
+	var connected: bool = true
 	var last_create_msec: int = -NetProtocol.CREATE_COOLDOWN_MSEC
 
 
@@ -28,6 +31,10 @@ class Room:
 	var members: Array[int] = []
 	var in_progress: bool = false
 
+
+## The only reason a room ever closes on someone: the room outlives every
+## member but the host, and the host is the referee.
+const ROOM_CLOSED_REASON := "The host left, so the match is over."
 
 var _peers: Dictionary = {}
 var _rooms: Dictionary = {}
@@ -70,7 +77,10 @@ func _on_peer_connected(id: int) -> void:
 
 
 func _on_peer_disconnected(id: int) -> void:
-	_remove_from_room(id, "A player disconnected.")
+	var info := _peer_info(id)
+	if info != null:
+		info.connected = false
+	_remove_from_room(id)
 	_peers.erase(id)
 	peers_changed.emit(_peers.size())
 	print("[relay] peer %d disconnected (%d online)" % [id, _peers.size()])
@@ -186,7 +196,7 @@ func _on_join_room(sender_id: int, room_id: String, password_hash: String) -> vo
 func _on_leave_room(sender_id: int) -> void:
 	if _require_greeted(sender_id) == null:
 		return
-	_remove_from_room(sender_id, "The host left the room.")
+	_remove_from_room(sender_id)
 
 
 func _on_set_ready(sender_id: int, value: bool) -> void:
@@ -245,7 +255,7 @@ func _on_relay(sender_id: int, payload: Dictionary) -> void:
 # Room bookkeeping
 # ---------------------------------------------------------------------------
 
-func _remove_from_room(peer_id: int, host_left_reason: String) -> void:
+func _remove_from_room(peer_id: int) -> void:
 	var info := _peer_info(peer_id)
 	if info == null or info.room_id.is_empty():
 		return
@@ -265,7 +275,7 @@ func _remove_from_room(peer_id: int, host_left_reason: String) -> void:
 			if other != null:
 				other.room_id = ""
 				other.ready = false
-			room_closed.rpc_id(member, host_left_reason)
+			room_closed.rpc_id(member, ROOM_CLOSED_REASON)
 		_rooms.erase(room.id)
 		print("[relay] room %s closed" % room.id)
 	else:
@@ -336,7 +346,7 @@ func _send_room_state(room: Room) -> void:
 
 func _send_room_list(peer_id: int) -> void:
 	var info := _peer_info(peer_id)
-	if info == null:
+	if info == null or not info.connected:
 		return
 	var summaries: Array = []
 	for room: Room in _rooms.values():
