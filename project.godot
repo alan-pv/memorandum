@@ -22,6 +22,8 @@ SceneSwitcher="*res://autoloads/scene_switcher.gd"
 AudioManager="*res://autoloads/audio_manager.gd"
 UiSounds="*uid://bxgfif35j5km8"
 UiIntro="*uid://bfpqjea2x1yw5"
+Net="*res://net/net_client.gd"
+Rooms="*res://net/room_client.gd"
 
 [display]
 

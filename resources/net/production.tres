@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="NetSettings" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://net/net_settings.gd" id="1_net"]
+
+[resource]
+script = ExtResource("1_net")
+url = "wss://memorandum.duckdns.org/ws"
+game_id = "memorandum"
+connect_timeout = 8.0
+label = "Production"
