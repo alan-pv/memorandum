@@ -1,0 +1,43 @@
+# Caddy in front of the relay. Copy to /etc/caddy/Caddyfile, put the real
+# domain in, and `sudo systemctl reload caddy`.
+#
+# Caddy asks Let's Encrypt for the certificate and renews it by itself. It
+# needs port 80 reachable from the internet for the HTTP-01 challenge; if the
+# ISP blocks 80, switch to the DNS-01 challenge (see the block at the bottom).
+#
+# The relay must be listening on 127.0.0.1 for this: set RELAY_BIND=127.0.0.1
+# in /etc/default/memorandum-relay, because from here on the thing facing the
+# internet is Caddy, not the game server.
+
+REPLACE-WITH-YOUR-DOMAIN {
+	encode zstd gzip
+
+	# The WebSocket. Caddy passes the Upgrade handshake through untouched.
+	handle /ws* {
+		reverse_proxy 127.0.0.1:8080
+	}
+
+	# Anything else: something to look at instead of a blank 404.
+	handle {
+		respond "Memorandum relay is up." 200
+	}
+}
+
+# If port 80 is blocked, the certificate has to be proved through DNS instead.
+# That needs a Caddy built with the provider's plugin:
+#
+#   xcaddy build --with github.com/caddy-dns/duckdns
+#
+# and this block instead of the plain site block above:
+#
+# REPLACE-WITH-YOUR-DOMAIN {
+# 	tls {
+# 		dns duckdns {env.DUCKDNS_TOKEN}
+# 	}
+# 	handle /ws* {
+# 		reverse_proxy 127.0.0.1:8080
+# 	}
+# }
+#
+# The token goes in an environment file the systemd unit reads, never in here:
+#   /etc/caddy/caddy.env  ->  DUCKDNS_TOKEN=...
