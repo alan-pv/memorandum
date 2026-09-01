@@ -13,7 +13,9 @@ config_version=5
 config/name="Memorandum"
 run/main_scene="res://scenes/main_menu/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
-config/icon="res://icon.svg"
+boot_splash/bg_color=Color(0.07058824, 0.07058824, 0.07058824, 1)
+boot_splash/image="uid://bse8utdrmqk5y"
+config/icon="uid://bse8utdrmqk5y"
 
 [audio]
 
