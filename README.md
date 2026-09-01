@@ -57,8 +57,8 @@ Four layers, with dependencies pointing only downwards:
   2. CORE       core/       pure logic, zero nodes, testable
   1. SERVICES   autoloads/  things that survive a scene change
 
-     NETWORK    net/        the wire, bolted on at the services layer
-     RELAY      server/     a standalone Godot project, deployed on its own
+	 NETWORK    net/        the wire, bolted on at the services layer
+	 RELAY      server/     a standalone Godot project, deployed on its own
 ```
 
 The rules that hold it together:
