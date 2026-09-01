@@ -6,6 +6,8 @@ Flip cards, find the matching groups, and play against a bot with tunable
 memory, against someone on the same keyboard, or against people in other
 browsers.
 
+Try it out on itch: https://missacocina.itch.io/memorama
+
 ![A match in progress](docs/gameplay.gif)
 
 ## What it does
