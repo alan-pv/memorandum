@@ -5,7 +5,7 @@ extends Control
 
 @export var presets: Array[DifficultyPreset] = []
 
-@onready var _seats_holder: VBoxContainer = %SeatsHolder
+@onready var _seats_holder: HBoxContainer = %SeatsHolder
 @onready var _preset_container: VBoxContainer = %PresetContainer
 @onready var _custom_button: Button = %CustomButton
 @onready var _back_button: Button = %BackButton

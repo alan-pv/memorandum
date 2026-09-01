@@ -20,9 +20,12 @@ browsers.
 - **Local play for two to four**, taking turns on the same device.
 - **Online play for two to four**, in a browser or on the desktop: browse
   rooms, create one with an optional password, fill the empty seats with bots,
-  and start.
-- Sound effects, an animated shader background, a staggered UI intro and a
-  shared theme.
+  set the board up card by card, chat while you wait, and start. The host can
+  also remove somebody from the room, and when a match ends everybody lands
+  back in it for the rematch instead of building a room again.
+- Sound effects and **background music**, with a volume slider per audio bus,
+  remembered between runs; an animated shader background, a staggered UI intro
+  and a shared theme.
 
 |  |  |  |
 |---|---|---|
@@ -67,6 +70,21 @@ The rules that hold it together:
 - **Configuration as data**, not code: the difficulties are `.tres` files, so
   balancing the game stopped being programming.
 
+Four pieces are written to be copied out of here as they are, because the next
+project will want them too. None of them knows what a memory game is:
+
+| Piece | Files | Reused by |
+|---|---|---|
+| Chat | `scenes/common/chat_panel.gd`, `net/room_chat.gd` | dropping the panel in a scene |
+| Audio | `autoloads/audio_manager.gd`, `resources/audio/default_bus_layout.tres`, `scenes/common/audio_settings.gd` | registering the autoload and the bus layout |
+| Rooms | `net/`, the `Net` and `Rooms` autoloads | changing one `game_id` |
+| Screens | `autoloads/scene_switcher.gd`, `ui_intro.gd`, `ui_sounds.gd` | registering them |
+
+Music is a convention rather than a setting: `AudioManager` plays
+`assets/audio/music.ogg` if the file is there, in every scene, looping whatever
+the import flags say, and the Music slider appears by itself because the
+settings panel builds one row per bus the project has.
+
 Online play adds one idea rather than a second code path. The relay is
 **game-agnostic** — it knows peers, rooms and passwords, and forwards the rest
 without looking inside, so the same binary serves any game whose clients agree
@@ -78,12 +96,18 @@ networked state of a match is a list of integers.
 
 ## Status
 
-Everything playable is implemented, locally and online. Nothing is persisted
-between runs yet — records and preferences are lost when the game closes.
+Everything playable is implemented, locally and online. Audio settings are
+written to `user://audio.cfg`; nothing else is persisted yet — records are lost
+when the game closes.
 
-Known limits of online play: the match ends if the referee closes the tab, and
-a room can only be found in the public list, since there is nowhere to type a
-room code yet.
+Known limits of online play: the match ends if the referee closes the tab, a
+room can only be found in the public list since there is nowhere to type a room
+code yet, and chat lives in the lobby only — the widget is ready for the match
+screen, nothing has been wired there.
+
+The relay speaks a versioned protocol and the client refuses to talk to another
+version, so **the relay and the game are deployed together**: a client that
+knows `kick_member` cannot understand one that does not.
 
 ## License
 

@@ -13,12 +13,14 @@ var online_deck: PackedInt32Array = PackedInt32Array()
 
 var last_difficulty_id: StringName = &"normal"
 
+## The board of the online match that just ended, so the room it was played in
+## can offer the same one again. The lobby reads it once and clears it: a room
+## created later starts from its difficulty, not from an old rematch.
+var last_online_board: Dictionary = {}
+
 ## What other players see in the lobby. Kept here so it survives the trip
 ## between the online menu, the room and the match.
 var player_name: String = "Player"
-
-var master_volume: float = 1.0
-var sfx_volume: float = 0.8
 
 var best_scores: Dictionary = {}
 

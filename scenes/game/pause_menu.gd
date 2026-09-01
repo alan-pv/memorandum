@@ -10,7 +10,10 @@ signal quit_requested
 
 @onready var _resume_button: Button = %ResumeButton
 @onready var _restart_button: Button = %RestartButton
+@onready var _audio_button: Button = %AudioButton
 @onready var _quit_button: Button = %QuitButton
+
+var _audio_panel: AudioSettings
 
 
 func _ready() -> void:
@@ -20,6 +23,12 @@ func _ready() -> void:
 	_resume_button.pressed.connect(func() -> void: resume_requested.emit())
 	_restart_button.pressed.connect(func() -> void: restart_requested.emit())
 	_quit_button.pressed.connect(func() -> void: quit_requested.emit())
+
+	# The same overlay the main menu builds, on top of the paused match.
+	_audio_panel = AudioSettings.new()
+	_audio_panel.closed.connect(func() -> void: _resume_button.grab_focus())
+	add_child(_audio_panel)
+	_audio_button.pressed.connect(func() -> void: _audio_panel.open())
 
 
 ## An online match cannot be restarted from one screen: the other three would
@@ -38,5 +47,6 @@ func open() -> void:
 
 
 func close() -> void:
+	_audio_panel.close()
 	get_tree().paused = false
 	visible = false

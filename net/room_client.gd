@@ -14,6 +14,10 @@ signal failed(code: String, message: String)
 
 var current: Dictionary = {}
 
+## Why the last room ended: left, closed by the host, or kicked. The screen that
+## picks the pieces up afterwards is not the one that heard it happen.
+var last_left_reason: String = ""
+
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -35,6 +39,25 @@ func is_host() -> bool:
 		if member.get("id", 0) == Net.my_peer_id:
 			return member.get("host", false)
 	return false
+
+
+func members() -> Array:
+	return current.get("members", [])
+
+
+## The name the room knows a peer by, for anything that has to say who did what.
+func member_name(peer_id: int) -> String:
+	for member in members():
+		if int(member.get("id", 0)) == peer_id:
+			return str(member.get("name", "Player"))
+	return "Player"
+
+
+func host_id() -> int:
+	for member in members():
+		if member.get("host", false):
+			return int(member.get("id", 0))
+	return 0
 
 
 func member_ids() -> Array[int]:
@@ -80,9 +103,23 @@ func set_ready(value: bool) -> void:
 		Net.set_ready.rpc_id(1, value)
 
 
+## Only the host can do this, and the relay checks it again: this guard is here
+## so a mis-click never even reaches the wire.
+func kick(peer_id: int) -> void:
+	if Net.is_online() and is_host() and peer_id != Net.my_peer_id:
+		Net.kick_member.rpc_id(1, peer_id)
+
+
 func start_match() -> void:
 	if Net.is_online() and is_host():
 		Net.start_match.rpc_id(1)
+
+
+## Reopens the room once the match is over, so the same table can play again
+## without anybody having to create anything.
+func end_match() -> void:
+	if Net.is_online() and is_host():
+		Net.end_match.rpc_id(1)
 
 
 ## Sends a game payload to everyone else in the room. What is inside is the
@@ -121,4 +158,5 @@ func _clear(reason: String) -> void:
 	if current.is_empty():
 		return
 	current = {}
+	last_left_reason = reason
 	left.emit(reason)

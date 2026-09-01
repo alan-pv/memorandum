@@ -28,6 +28,9 @@ signal aborted(reason: String)
 # nothing at all on the server.
 # ---------------------------------------------------------------------------
 
+## Host -> everyone, from the lobby: the board being put together. A preview,
+## resent whenever it changes, so nobody sits down blind.
+const T_SETUP := "setup"
 ## Host -> everyone, from the lobby: the config and the deck of this match.
 const T_START := "start"
 ## Referee -> everyone, while waiting: "are you in the game scene yet?"
@@ -191,9 +194,14 @@ func end_turn() -> void:
 	_ahead = still_ahead
 
 
+## The board is empty. The referee is the only one that tells the relay, and
+## from that moment the room is a lobby again for everybody in it.
 func finish() -> void:
 	_finished = true
 	end_turn()
+	GameSettings.last_online_board = {"cards": config.total_cards, "group": config.group_size}
+	if is_referee:
+		Rooms.end_match()
 
 
 ## The referee's verdict on a request. Everything that reaches the wire has
