@@ -30,6 +30,9 @@ class Room:
 	var host_id: int = 0
 	var members: Array[int] = []
 	var in_progress: bool = false
+	## Peers the host threw out. A new socket gets a new id, so this only stops
+	## the obvious "click Join again": it is a door, not a lock.
+	var kicked: Array[int] = []
 
 
 ## The only reason a room ever closes on someone: the room outlives every
@@ -203,6 +206,9 @@ func _on_join_room(sender_id: int, room_id: String, password_hash: String) -> vo
 	if room.password_hash != password_hash:
 		_fail(sender_id, ERR_BAD_PASSWORD)
 		return
+	if room.kicked.has(sender_id):
+		_fail(sender_id, ERR_KICKED)
+		return
 
 	room.members.append(sender_id)
 	info.room_id = room.id
@@ -251,6 +257,61 @@ func _on_start_match(sender_id: int) -> void:
 	print("[relay] room %s started with %d players" % [room.id, room.members.size()])
 	_send_room_state(room)
 	_broadcast_room_list()
+
+
+## The other side of start_match: the room goes back to being a waiting room.
+##
+## Every guest's ready is cleared, so the next round has to be agreed to rather
+## than inherited from the last one. The host stays ready, exactly as when the
+## room was created: they have no ready button, they have a Start one. Clients
+## still looking at the scoreboard get this state now and read it on arrival.
+func _on_end_match(sender_id: int) -> void:
+	if _require_greeted(sender_id) == null:
+		return
+	var room := _room_of(sender_id)
+	if room == null:
+		_fail(sender_id, ERR_NOT_IN_ROOM)
+		return
+	if room.host_id != sender_id:
+		_fail(sender_id, ERR_NOT_HOST)
+		return
+
+	room.in_progress = false
+	for member in room.members:
+		var info := _peer_info(member)
+		if info != null:
+			info.ready = member == room.host_id
+
+	print("[relay] room %s is a lobby again (%d players)" % [room.id, room.members.size()])
+	_send_room_state(room)
+	_broadcast_room_list()
+
+
+## The host removes somebody. The relay is the only place this can be decided:
+## a kick sent between clients is one the kicked client can simply ignore.
+##
+## Being kicked and the room closing are told apart by the reason alone, so
+## every client already knows how to handle it.
+func _on_kick_member(sender_id: int, peer_id: int) -> void:
+	if _require_greeted(sender_id) == null:
+		return
+	var room := _room_of(sender_id)
+	if room == null:
+		_fail(sender_id, ERR_NOT_IN_ROOM)
+		return
+	if room.host_id != sender_id:
+		_fail(sender_id, ERR_NOT_HOST)
+		return
+	if peer_id == sender_id or not room.members.has(peer_id):
+		_fail(sender_id, ERR_BAD_REQUEST)
+		return
+
+	room.kicked.append(peer_id)
+	_remove_from_room(peer_id)
+	var target := _peer_info(peer_id)
+	if target != null and target.connected:
+		room_closed.rpc_id(peer_id, KICK_REASON)
+	print("[relay] peer %d kicked from room %s by the host" % [peer_id, room.id])
 
 
 ## Forwards a game payload to everyone else in the sender's room. The relay

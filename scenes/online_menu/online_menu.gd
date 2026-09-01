@@ -1,13 +1,19 @@
 extends Control
 
-## The lobby browser: connect to a relay, look at the rooms, make one or join one.
+## Two steps in one screen: first your name and the connection, then the rooms.
+## The list only exists once you are online, so it is never shown empty and
+## unexplained: until the relay answers, the name step is all there is.
 
 
 const REFRESH_SECONDS := 3.0
 
+@onready var _connect_step: VBoxContainer = %ConnectStep
+@onready var _rooms_step: VBoxContainer = %RoomsStep
 @onready var _name_field: LineEdit = %NameField
 @onready var _connect_button: Button = %ConnectButton
 @onready var _status_label: Label = %StatusLabel
+@onready var _identity_label: Label = %IdentityLabel
+@onready var _change_name_button: Button = %ChangeNameButton
 @onready var _refresh_button: Button = %RefreshButton
 @onready var _room_list: VBoxContainer = %RoomList
 @onready var _join_panel: PanelContainer = %JoinPanel
@@ -28,12 +34,13 @@ var _refresh_timer: Timer
 
 func _ready() -> void:
 	_name_field.text = GameSettings.player_name
-	_room_name_field.placeholder_text = "%s's room" % GameSettings.player_name
 
 	_fill_max_players()
 	_build_refresh_timer()
 
 	_connect_button.pressed.connect(_on_connect_pressed)
+	_name_field.text_submitted.connect(func(_t: String) -> void: _on_connect_pressed())
+	_change_name_button.pressed.connect(_on_change_name_pressed)
 	_refresh_button.pressed.connect(func() -> void: Rooms.refresh())
 	_create_button.pressed.connect(_on_create_pressed)
 	_back_button.pressed.connect(_on_back_pressed)
@@ -48,11 +55,17 @@ func _ready() -> void:
 	Rooms.failed.connect(_on_room_failed)
 
 	_close_join_panel()
+	# Whatever ended the last room — the host leaving, or being thrown out of it
+	# — happened on a screen that is already gone. This is where it gets said.
+	_say(Rooms.last_left_reason)
+	Rooms.last_left_reason = ""
 	_refresh_view()
 
 	# Coming back from a room leaves the connection open: pick the list up again.
 	if Net.is_online():
 		Rooms.refresh()
+	else:
+		_name_field.grab_focus()
 
 
 func _fill_max_players() -> void:
@@ -75,7 +88,6 @@ func _build_refresh_timer() -> void:
 
 func _on_connect_pressed() -> void:
 	if Net.is_online():
-		Net.disconnect_from_server()
 		return
 	GameSettings.player_name = _clean_name()
 	_name_field.text = GameSettings.player_name
@@ -83,6 +95,14 @@ func _on_connect_pressed() -> void:
 	var settings := NetSettings.new()
 	_say("Connecting to %s..." % settings.url)
 	Net.connect_to_server(settings, GameSettings.player_name)
+	_refresh_view()
+
+
+## Back to the name step. The relay ties the name to the connection, so
+## changing it means dropping and greeting it again.
+func _on_change_name_pressed() -> void:
+	Net.disconnect_from_server()
+	_name_field.grab_focus()
 
 
 func _clean_name() -> String:
@@ -92,7 +112,8 @@ func _clean_name() -> String:
 
 func _on_net_state_changed(_state: int) -> void:
 	if Net.is_online():
-		_say("Connected as %s." % GameSettings.player_name)
+		_say("Connected.")
+		_room_name_field.placeholder_text = "%s's room" % GameSettings.player_name
 		Rooms.refresh()
 	elif Net.state == Net.State.OFFLINE:
 		_rooms = []
@@ -248,14 +269,13 @@ func _refresh_view() -> void:
 	var online := Net.is_online()
 	var busy := Net.state == Net.State.CONNECTING or Net.state == Net.State.HANDSHAKING
 
-	_connect_button.text = "Disconnect" if online else "Connect"
+	_connect_step.visible = not online
+	_rooms_step.visible = online
+
 	_connect_button.disabled = busy
-	_name_field.editable = not online and not busy
-	_refresh_button.disabled = not online
-	_create_button.disabled = not online
-	_room_name_field.editable = online
-	_room_password_field.editable = online
-	_max_players_option.disabled = not online
+	_connect_button.text = "Connecting..." if busy else "Next"
+	_name_field.editable = not busy
+	_identity_label.text = "as %s" % GameSettings.player_name
 
 	if online:
 		_refresh_timer.start()
@@ -268,3 +288,4 @@ func _refresh_view() -> void:
 
 func _say(text: String) -> void:
 	_status_label.text = text
+	_status_label.visible = not text.is_empty()

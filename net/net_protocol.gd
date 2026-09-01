@@ -7,7 +7,12 @@ extends Node
 
 ## Bump this whenever a message changes shape. A client that does not match is
 ## turned away with a clear reason instead of failing in some subtle way later.
-const PROTOCOL_VERSION := 2
+##
+## Adding a message counts as changing shape. Godot numbers the RPCs of a script
+## by sorting their names, so one new method renumbers every message that sorts
+## after it: the two ends have to be deployed together, and a mismatch is caught
+## here rather than being decoded as some other message entirely.
+const PROTOCOL_VERSION := 4
 
 const DEFAULT_PORT := 8080
 
@@ -26,6 +31,7 @@ const MIN_PLAYERS := 2
 const MAX_PLAYERS := 4
 
 const MAX_NAME_LENGTH := 16
+const MAX_CHAT_LENGTH := 200
 const MAX_ROOM_NAME_LENGTH := 24
 const MAX_GAME_ID_LENGTH := 32
 const MAX_PAYLOAD_BYTES := 4096
@@ -50,6 +56,7 @@ const ERR_IN_PROGRESS := &"in_progress"
 const ERR_NOT_HOST := &"not_host"
 const ERR_TOO_FAST := &"too_fast"
 const ERR_BAD_REQUEST := &"bad_request"
+const ERR_KICKED := &"kicked"
 
 const ERROR_MESSAGES := {
 	ERR_PROTOCOL: "This build is out of date. Reload the page to get the current one.",
@@ -64,7 +71,12 @@ const ERROR_MESSAGES := {
 	ERR_NOT_HOST: "Only the player who created the room can do that.",
 	ERR_TOO_FAST: "Slow down a moment before creating another room.",
 	ERR_BAD_REQUEST: "The server rejected that request.",
+	ERR_KICKED: "The host removed you from that room.",
 }
+
+## What the room tells someone the host threw out. It travels as a `room_closed`
+## reason, so being kicked and the room closing land on the same code path.
+const KICK_REASON := "The host removed you from the room."
 
 
 static func message_for(code: StringName) -> String:
@@ -123,10 +135,24 @@ func start_match() -> void:
 	_on_start_match(_sender())
 
 
+## The match is over and the room is a waiting room again: open to newcomers,
+## and with everybody's ready cleared so the next round is agreed to on its own.
+@rpc("any_peer", "call_remote", "reliable")
+func end_match() -> void:
+	_on_end_match(_sender())
+
+
 ## Anything game-specific rides inside here. The relay never looks at it.
 @rpc("any_peer", "call_remote", "reliable")
 func relay(payload: Dictionary) -> void:
 	_on_relay(_sender(), payload)
+
+
+## The host throws somebody out. Only the relay can actually do it: a client
+## asking another client to leave is a request it is free to ignore.
+@rpc("any_peer", "call_remote", "reliable")
+func kick_member(peer_id: int) -> void:
+	_on_kick_member(_sender(), peer_id)
 
 
 ## The answer to `ping`. It carries nothing: its only job is to put bytes on the
@@ -209,6 +235,12 @@ func _on_set_ready(_sender_id: int, _value: bool) -> void:
 	pass
 
 func _on_start_match(_sender_id: int) -> void:
+	pass
+
+func _on_end_match(_sender_id: int) -> void:
+	pass
+
+func _on_kick_member(_sender_id: int, _peer_id: int) -> void:
 	pass
 
 func _on_relay(_sender_id: int, _payload: Dictionary) -> void:

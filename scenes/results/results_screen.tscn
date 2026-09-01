@@ -1,6 +1,12 @@
 [gd_scene format=3 uid="uid://tlio37od85y2"]
 
 [ext_resource type="Script" uid="uid://g4eb7ott0bxy" path="res://scenes/results/results_screen.gd" id="1_results"]
+[ext_resource type="Shader" uid="uid://ifjwkhjcmu8w" path="res://assets/shaders/background.gdshader" id="2_0rr2c"]
+[ext_resource type="Texture2D" uid="uid://detwqytki1m0g" path="res://assets/sprites/background.png" id="3_mbhus"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2ky5t"]
+shader = ExtResource("2_0rr2c")
+shader_parameter/speed = 0.1
 
 [node name="ResultsScreen" type="Control" unique_id=386453027]
 layout_mode = 3
@@ -10,6 +16,17 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_results")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=421742726]
+modulate = Color(0.11764706, 0.11764706, 0.11764706, 1)
+material = SubResource("ShaderMaterial_2ky5t")
+layout_mode = 0
+offset_left = -23.0
+offset_top = -283.0
+offset_right = 1177.0
+offset_bottom = 917.0
+texture = ExtResource("3_mbhus")
+stretch_mode = 1
 
 [node name="Center" type="CenterContainer" parent="." unique_id=1001222301]
 layout_mode = 1

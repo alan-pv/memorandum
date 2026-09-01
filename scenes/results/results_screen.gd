@@ -25,14 +25,22 @@ func _ready() -> void:
 	_show_result(GameSettings.last_result)
 
 	# "Again" would start a local match with the seats of an online one, and the
-	# rest of the table is not here to be asked. Online you go back through the
-	# lobby, leaving the room you just played in behind on the way.
+	# rest of the table is not here to be asked. Online the rematch is agreed on
+	# back in the room, which is still standing: the referee reopened it the
+	# moment the board emptied.
 	_again_button.visible = not _was_online
 	if _was_online:
-		_change_button.text = "Back to the lobby"
+		Rooms.left.connect(func(_reason: String) -> void: _label_return_button())
+		_label_return_button()
 		_change_button.grab_focus()
 	else:
 		_again_button.grab_focus()
+
+
+## The room usually outlives the match, and then this is the way back into it.
+## It only stops being true if the host walked off while the scores were up.
+func _label_return_button() -> void:
+	_change_button.text = "Back to the room" if Rooms.in_room() else "Back to the rooms"
 
 
 func _show_result(result: Dictionary) -> void:
@@ -83,8 +91,9 @@ func _on_again_pressed() -> void:
 
 func _on_change_pressed() -> void:
 	if _was_online:
-		Rooms.leave()
-		SceneSwitcher.go_to(SceneSwitcher.ONLINE_MENU, false)
+		SceneSwitcher.go_to(
+			SceneSwitcher.ROOM_LOBBY if Rooms.in_room() else SceneSwitcher.ONLINE_MENU, false
+		)
 		return
 	SceneSwitcher.go_to(SceneSwitcher.DIFFICULTY_MENU, false)
 
