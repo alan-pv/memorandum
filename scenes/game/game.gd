@@ -59,6 +59,9 @@ func _create_online() -> void:
 	online.message.connect(_on_online_message)
 	online.aborted.connect(_on_online_aborted)
 	pause_menu.set_online(true)
+	# Folded away to start with: the board is what the screen is for, and the
+	# dot on the bar is enough to say something was said.
+	RoomChat.spawn(self, false)
 
 
 func _create_players() -> void:

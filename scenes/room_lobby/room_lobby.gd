@@ -26,7 +26,6 @@ const READY_STATES := ["normal", "hover", "pressed", "focus"]
 @onready var _difficulty_option: OptionButton = %DifficultyOption
 @onready var _cards_spin: SpinBox = %CardsSpin
 @onready var _group_spin: SpinBox = %GroupSpin
-@onready var _chat_holder: VBoxContainer = %ChatHolder
 @onready var _summary_label: Label = %SummaryLabel
 @onready var _status_label: Label = %StatusLabel
 @onready var _leave_button: Button = %LeaveButton
@@ -50,8 +49,6 @@ var _leaving: bool = false
 ## value does not read as the host having typed it.
 var _syncing: bool = false
 
-var _chat: ChatPanel
-
 
 func _ready() -> void:
 	if not Rooms.in_room():
@@ -59,7 +56,9 @@ func _ready() -> void:
 		return
 
 	_fill_difficulties()
-	_build_chat()
+	# The whole chat, in the corner, wired to the relay: panel, carrier and the
+	# folding window are three files that have never heard of a memory game.
+	RoomChat.spawn(self)
 
 	_leave_button.pressed.connect(_on_leave_pressed)
 	_ready_button.toggled.connect(_on_ready_toggled)
@@ -83,21 +82,6 @@ func _ready() -> void:
 		Rooms.send({"t": OnlineMatch.T_SETUP, "ask": true})
 	_paint_ready_button(false)
 	_refresh()
-
-
-## The chat is two reusable pieces bolted together: a panel that only knows how
-## to show lines, and a carrier that only knows how to move them. Neither has
-## ever heard of a memory game, so both go to the next project as they are.
-func _build_chat() -> void:
-	_chat = ChatPanel.new()
-	_chat.title = "Chat"
-	_chat.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_chat_holder.add_child(_chat)
-
-	var carrier := RoomChat.new()
-	add_child(carrier)
-	carrier.attach(_chat)
-	_chat.push_system("You are in room %s." % str(Rooms.current.get("id", "—")))
 
 
 func _fill_difficulties() -> void:

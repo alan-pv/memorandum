@@ -31,6 +31,9 @@ func _ready() -> void:
 	_again_button.visible = not _was_online
 	if _was_online:
 		Rooms.left.connect(func(_reason: String) -> void: _label_return_button())
+		# The room is still standing, and this is where a rematch gets agreed on.
+		if Rooms.in_room():
+			RoomChat.spawn(self, false)
 		_label_return_button()
 		_change_button.grab_focus()
 	else:

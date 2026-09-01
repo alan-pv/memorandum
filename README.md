@@ -20,9 +20,10 @@ browsers.
 - **Local play for two to four**, taking turns on the same device.
 - **Online play for two to four**, in a browser or on the desktop: browse
   rooms, create one with an optional password, fill the empty seats with bots,
-  set the board up card by card, chat while you wait, and start. The host can
-  also remove somebody from the room, and when a match ends everybody lands
-  back in it for the rematch instead of building a room again.
+  set the board up card by card, and start. The chat sits in the corner of the
+  room, of the match and of the results, so the table can talk throughout. The
+  host can also remove somebody from the room, and when a match ends everybody
+  lands back in it for the rematch instead of building a room again.
 - Sound effects and **background music**, with a volume slider per audio bus,
   remembered between runs; an animated shader background, a staggered UI intro
   and a shared theme.
@@ -75,10 +76,17 @@ project will want them too. None of them knows what a memory game is:
 
 | Piece | Files | Reused by |
 |---|---|---|
-| Chat | `scenes/common/chat_panel.gd`, `net/room_chat.gd` | dropping the panel in a scene |
+| Chat | `scenes/common/chat_panel.gd`, `chat_dock.gd`, `net/room_chat.gd` | `RoomChat.spawn(self)` on any screen |
 | Audio | `autoloads/audio_manager.gd`, `resources/audio/default_bus_layout.tres`, `scenes/common/audio_settings.gd` | registering the autoload and the bus layout |
 | Rooms | `net/`, the `Net` and `Rooms` autoloads | changing one `game_id` |
 | Screens | `autoloads/scene_switcher.gd`, `ui_intro.gd`, `ui_sounds.gd` | registering them |
+
+The chat is that split twice over: `ChatPanel` only knows how to show lines,
+`ChatDock` only knows how to fold a panel into a corner and put a red dot on
+the bar when something arrived while it was shut, and `RoomChat` only knows how
+to move lines over the relay. None of the three has heard of the others' job,
+and the conversation itself outlives the screen showing it, so walking from the
+room into the match and out to the results never loses it.
 
 Music is a convention rather than a setting: `AudioManager` plays
 `assets/audio/music.ogg` if the file is there, in every scene, looping whatever
@@ -102,8 +110,7 @@ when the game closes.
 
 Known limits of online play: the match ends if the referee closes the tab, a
 room can only be found in the public list since there is nowhere to type a room
-code yet, and chat lives in the lobby only — the widget is ready for the match
-screen, nothing has been wired there.
+code yet.
 
 The relay speaks a versioned protocol and the client refuses to talk to another
 version, so **the relay and the game are deployed together**: a client that

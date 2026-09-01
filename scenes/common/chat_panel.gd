@@ -12,6 +12,10 @@ extends PanelContainer
 ## Somebody pressed Enter or Send. Already trimmed and cut to `max_length`.
 signal submitted(text: String)
 
+## A line landed in the log, whoever wrote it. Whatever frames the panel uses
+## it to notice what the reader missed while looking elsewhere.
+signal line_added
+
 ## Kept small on purpose: a log nobody scrolls does not need to be a transcript.
 @export var max_lines: int = 80
 
@@ -90,6 +94,7 @@ func push_line(author: String, text: String, color: Color = Color.WHITE) -> void
 	_log.add_text(text)
 	_log.newline()
 	_trim()
+	line_added.emit()
 
 
 func push_system(text: String) -> void:
@@ -100,6 +105,7 @@ func push_system(text: String) -> void:
 	_log.pop()
 	_log.newline()
 	_trim()
+	line_added.emit()
 
 
 func clear() -> void:
@@ -110,6 +116,17 @@ func clear() -> void:
 func focus_input() -> void:
 	if _field != null:
 		_field.grab_focus()
+
+
+## True while the caret is in the box. A screen that answers to keystrokes asks
+## before acting on one, and leaves them to whoever is mid-sentence.
+func is_typing() -> bool:
+	return _field != null and _field.has_focus()
+
+
+func stop_typing() -> void:
+	if _field != null:
+		_field.release_focus()
 
 
 ## Locks the box without hiding the log: there is still something to read when

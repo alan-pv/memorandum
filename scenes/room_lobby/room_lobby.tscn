@@ -38,7 +38,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="Panel" type="PanelContainer" parent="Center" unique_id=1313208957]
-custom_minimum_size = Vector2(940, 0)
+custom_minimum_size = Vector2(560, 0)
 layout_mode = 2
 
 [node name="VBox" type="VBoxContainer" parent="Center/Panel" unique_id=1751970621]
@@ -63,82 +63,72 @@ horizontal_alignment = 1
 [node name="Separator" type="HSeparator" parent="Center/Panel/VBox" unique_id=216792579]
 layout_mode = 2
 
-[node name="Columns" type="HBoxContainer" parent="Center/Panel/VBox" unique_id=1099355042]
-layout_mode = 2
-theme_override_constants/separation = 20
-
-[node name="Left" type="VBoxContainer" parent="Center/Panel/VBox/Columns" unique_id=1953608617]
-custom_minimum_size = Vector2(500, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 12
-
-[node name="SeatList" type="VBoxContainer" parent="Center/Panel/VBox/Columns/Left" unique_id=1476645536]
+[node name="SeatList" type="VBoxContainer" parent="Center/Panel/VBox" unique_id=1476645536]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="HostBox" type="VBoxContainer" parent="Center/Panel/VBox/Columns/Left" unique_id=817813039]
+[node name="HostBox" type="VBoxContainer" parent="Center/Panel/VBox" unique_id=817813039]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Separator2" type="HSeparator" parent="Center/Panel/VBox/Columns/Left/HostBox" unique_id=249388149]
+[node name="Separator2" type="HSeparator" parent="Center/Panel/VBox/HostBox" unique_id=249388149]
 layout_mode = 2
 
-[node name="BotRow" type="HBoxContainer" parent="Center/Panel/VBox/Columns/Left/HostBox" unique_id=1175117788]
+[node name="BotRow" type="HBoxContainer" parent="Center/Panel/VBox/HostBox" unique_id=1175117788]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="BotLabel" type="Label" parent="Center/Panel/VBox/Columns/Left/HostBox/BotRow" unique_id=1044622651]
+[node name="BotLabel" type="Label" parent="Center/Panel/VBox/HostBox/BotRow" unique_id=1044622651]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Bots"
 
-[node name="RemoveBotButton" type="Button" parent="Center/Panel/VBox/Columns/Left/HostBox/BotRow" unique_id=1364294484]
+[node name="RemoveBotButton" type="Button" parent="Center/Panel/VBox/HostBox/BotRow" unique_id=1364294484]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(44, 0)
 layout_mode = 2
 text = "-"
 
-[node name="BotCountLabel" type="Label" parent="Center/Panel/VBox/Columns/Left/HostBox/BotRow" unique_id=741061345]
+[node name="BotCountLabel" type="Label" parent="Center/Panel/VBox/HostBox/BotRow" unique_id=741061345]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 text = "0"
 horizontal_alignment = 1
 
-[node name="AddBotButton" type="Button" parent="Center/Panel/VBox/Columns/Left/HostBox/BotRow" unique_id=903055520]
+[node name="AddBotButton" type="Button" parent="Center/Panel/VBox/HostBox/BotRow" unique_id=903055520]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(44, 0)
 layout_mode = 2
 text = "+"
 
-[node name="DifficultyRow" type="HBoxContainer" parent="Center/Panel/VBox/Columns/Left/HostBox" unique_id=343088755]
+[node name="DifficultyRow" type="HBoxContainer" parent="Center/Panel/VBox/HostBox" unique_id=343088755]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="DifficultyLabel" type="Label" parent="Center/Panel/VBox/Columns/Left/HostBox/DifficultyRow" unique_id=2020364154]
+[node name="DifficultyLabel" type="Label" parent="Center/Panel/VBox/HostBox/DifficultyRow" unique_id=2020364154]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Difficulty"
 
-[node name="DifficultyOption" type="OptionButton" parent="Center/Panel/VBox/Columns/Left/HostBox/DifficultyRow" unique_id=790189879]
+[node name="DifficultyOption" type="OptionButton" parent="Center/Panel/VBox/HostBox/DifficultyRow" unique_id=790189879]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(180, 0)
 layout_mode = 2
 
-[node name="BoardRow" type="HBoxContainer" parent="Center/Panel/VBox/Columns/Left/HostBox" unique_id=1264533808]
+[node name="BoardRow" type="HBoxContainer" parent="Center/Panel/VBox/HostBox" unique_id=1264533808]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="CardsLabel" type="Label" parent="Center/Panel/VBox/Columns/Left/HostBox/BoardRow" unique_id=1729204465]
+[node name="CardsLabel" type="Label" parent="Center/Panel/VBox/HostBox/BoardRow" unique_id=1729204465]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Cards"
 
-[node name="CardsSpin" type="SpinBox" parent="Center/Panel/VBox/Columns/Left/HostBox/BoardRow" unique_id=1391088203]
+[node name="CardsSpin" type="SpinBox" parent="Center/Panel/VBox/HostBox/BoardRow" unique_id=1391088203]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
@@ -146,11 +136,11 @@ min_value = 4.0
 max_value = 96.0
 value = 16.0
 
-[node name="GroupLabel" type="Label" parent="Center/Panel/VBox/Columns/Left/HostBox/BoardRow" unique_id=1055175216]
+[node name="GroupLabel" type="Label" parent="Center/Panel/VBox/HostBox/BoardRow" unique_id=1055175216]
 layout_mode = 2
 text = "Group of"
 
-[node name="GroupSpin" type="SpinBox" parent="Center/Panel/VBox/Columns/Left/HostBox/BoardRow" unique_id=755194838]
+[node name="GroupSpin" type="SpinBox" parent="Center/Panel/VBox/HostBox/BoardRow" unique_id=755194838]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
@@ -158,7 +148,7 @@ min_value = 2.0
 max_value = 5.0
 value = 2.0
 
-[node name="SummaryLabel" type="Label" parent="Center/Panel/VBox/Columns/Left" unique_id=1358881245]
+[node name="SummaryLabel" type="Label" parent="Center/Panel/VBox" unique_id=1358881245]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.909804, 0.929412, 0.952941, 1)
@@ -167,20 +157,13 @@ text = "—"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="StatusLabel" type="Label" parent="Center/Panel/VBox/Columns/Left" unique_id=1589867561]
+[node name="StatusLabel" type="Label" parent="Center/Panel/VBox" unique_id=1589867561]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.721569, 0.482353, 0.482353, 1)
 theme_override_font_sizes/font_size = 15
 horizontal_alignment = 1
 autowrap_mode = 3
-
-[node name="ChatHolder" type="VBoxContainer" parent="Center/Panel/VBox/Columns" unique_id=1846327690]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(360, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
 
 [node name="Buttons" type="HBoxContainer" parent="Center/Panel/VBox" unique_id=272265075]
 layout_mode = 2
