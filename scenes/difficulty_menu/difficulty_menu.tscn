@@ -52,14 +52,15 @@ theme_override_font_sizes/font_size = 40
 text = "Choose your game"
 horizontal_alignment = 1
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="Center/VBox" unique_id=98207079]
-layout_mode = 2
-size_flags_horizontal = 4
-
-[node name="SeatsHolder" type="VBoxContainer" parent="Center/VBox/VBoxContainer2" unique_id=1842160144]
+[node name="SeatsHolder" type="HBoxContainer" parent="Center/VBox" unique_id=449680089]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
+alignment = 1
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Center/VBox" unique_id=98207079]
+layout_mode = 2
+size_flags_horizontal = 4
 
 [node name="Separator" type="HSeparator" parent="Center/VBox/VBoxContainer2" unique_id=1765143869]
 layout_mode = 2

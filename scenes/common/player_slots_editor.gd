@@ -7,7 +7,6 @@ extends VBoxContainer
 signal slots_changed(seats: Array[PlayerSlot])
 
 const KIND_LABELS := ["Human", "Bot"]
-const NAME_MAX_LENGTH := 16
 
 ## Seat 0 is the person holding the device: it cannot become a bot.
 @export var lock_first_seat: bool = true
@@ -18,7 +17,7 @@ var seats: Array[PlayerSlot] = []
 
 var _count_row: HBoxContainer
 var _count_buttons: Array[Button] = []
-var _seat_rows: VBoxContainer
+var _seat_rows: HBoxContainer
 ## Where a fresh bot comes from, so the difficulty preset decides how sharp it is.
 var _bot_factory: Callable = func() -> PlayerSlot: return PlayerSlot.bot("Bot")
 
@@ -41,6 +40,7 @@ func setup(starting_seats: Array[PlayerSlot], bot_factory: Callable = Callable()
 
 func set_seats(new_seats: Array[PlayerSlot]) -> void:
 	seats = new_seats.duplicate()
+	_rename_default_seats()
 	if is_node_ready():
 		_refresh()
 
@@ -60,13 +60,13 @@ func _build_skeleton() -> void:
 		var button := Button.new()
 		button.text = str(count)
 		button.toggle_mode = true
-		button.custom_minimum_size = Vector2(48, 0)
+		button.custom_minimum_size = Vector2(32, 0)
 		# bind() freezes the count into the callback, so every button knows its own.
 		button.pressed.connect(_on_count_pressed.bind(count))
 		_count_row.add_child(button)
 		_count_buttons.append(button)
 
-	_seat_rows = VBoxContainer.new()
+	_seat_rows = HBoxContainer.new()
 	_seat_rows.add_theme_constant_override("separation", 6)
 	add_child(_seat_rows)
 
@@ -101,30 +101,24 @@ func _refresh() -> void:
 func _build_seat_row(index: int) -> Control:
 	var slot := seats[index]
 
-	var row := HBoxContainer.new()
+	var row := VBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
 
 	var tag := Label.new()
 	tag.text = "P%d" % (index + 1)
-	tag.custom_minimum_size = Vector2(34, 0)
+	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tag.custom_minimum_size = Vector2(10, 0)
 	row.add_child(tag)
 
 	var kind_picker := OptionButton.new()
 	for label in KIND_LABELS:
 		kind_picker.add_item(label)
 	kind_picker.selected = 1 if slot.is_bot() else 0
-	kind_picker.custom_minimum_size = Vector2(104, 0)
+	kind_picker.custom_minimum_size = Vector2(32, 0)
 	kind_picker.disabled = index == 0 and lock_first_seat
 	kind_picker.item_selected.connect(_on_kind_selected.bind(index))
 	row.add_child(kind_picker)
 
-	var name_field := LineEdit.new()
-	name_field.text = slot.display_name
-	name_field.max_length = NAME_MAX_LENGTH
-	name_field.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	name_field.custom_minimum_size = Vector2(140, 0)
-	name_field.text_changed.connect(_on_name_changed.bind(index))
-	row.add_child(name_field)
 
 	if slot.is_bot() and show_bot_tuning:
 		row.add_child(_build_memory_control(index, slot))
@@ -134,7 +128,7 @@ func _build_seat_row(index: int) -> Control:
 
 func _build_memory_control(index: int, slot: PlayerSlot) -> Control:
 	var box := VBoxContainer.new()
-	box.custom_minimum_size = Vector2(150, 0)
+	box.custom_minimum_size = Vector2(64, 0)
 
 	var caption := Label.new()
 	caption.text = "Memory: %s" % slot.memory_label()
@@ -164,19 +158,14 @@ func _on_kind_selected(choice: int, index: int) -> void:
 	slots_changed.emit(seats)
 
 
-func _on_name_changed(new_text: String, index: int) -> void:
-	seats[index].display_name = new_text
-	slots_changed.emit(seats)
-
-
 func _on_memory_changed(value: float, index: int, caption: Label) -> void:
 	seats[index].bot_memory = value
 	caption.text = "Memory: %s" % seats[index].memory_label()
 	slots_changed.emit(seats)
 
 
-## Keeps the untouched default names numbered: "Bot", "Bot 2", "Player 2"...
-## A name the player typed themselves is never overwritten.
+## Numbers the seats: "You", "Player 2"... and "Bot", "Bot 2"... Names are not
+## editable here, so every seat is renamed whenever the table changes.
 func _rename_default_seats() -> void:
 	var bots := 0
 	var humans := 0
@@ -184,9 +173,7 @@ func _rename_default_seats() -> void:
 		var slot := seats[i]
 		if slot.is_bot():
 			bots += 1
-			if slot.display_name.begins_with("Bot"):
-				slot.display_name = "Bot" if bots == 1 else "Bot %d" % bots
+			slot.display_name = "Bot" if bots == 1 else "Bot %d" % bots
 		else:
 			humans += 1
-			if i > 0 and slot.display_name.begins_with("Player"):
-				slot.display_name = "Player %d" % humans
+			slot.display_name = "You" if i == 0 else "Player %d" % humans
