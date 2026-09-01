@@ -57,23 +57,32 @@ mouse_filter = 2
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="PlayButton" type="Button" parent="Center/VBox/VBoxContainer" unique_id=1923214012]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(300, 64)
+[node name="HBoxContainer" type="HBoxContainer" parent="Center/VBox/VBoxContainer" unique_id=1618438192]
 layout_mode = 2
-text = "Play"
 
-[node name="OnlineButton" type="Button" parent="Center/VBox/VBoxContainer"]
+[node name="PlayButton" type="Button" parent="Center/VBox/VBoxContainer/HBoxContainer" unique_id=1923214012]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(300, 0)
+custom_minimum_size = Vector2(200, 64)
 layout_mode = 2
-text = "Play online"
+text = "Local"
+
+[node name="OnlineButton" type="Button" parent="Center/VBox/VBoxContainer/HBoxContainer" unique_id=1370388609]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Online"
 
 [node name="HowToButton" type="Button" parent="Center/VBox/VBoxContainer" unique_id=1003550859]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 text = "How to play"
+
+[node name="AudioButton" type="Button" parent="Center/VBox/VBoxContainer" unique_id=1274558903]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+text = "Audio"
 
 [node name="QuitButton" type="Button" parent="Center/VBox/VBoxContainer" unique_id=193159753]
 unique_name_in_owner = true
@@ -116,7 +125,6 @@ horizontal_alignment = 1
 
 [node name="HelpText" type="Label" parent="HelpPanel/Center/Panel/VBox" unique_id=656175952]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.482353, 0.607843, 0.721569, 1)
 text = "The cards start face down.
 
 On your turn you flip cards until you complete a group: as many cards with the same number as the difficulty says (2, 3, 4...).
